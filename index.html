@@ -10,7 +10,7 @@
 <link rel="icon" href="icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700&family=Kosugi+Maru&display=swap" rel="stylesheet">
 <style>
   :root{
     --bg:#FFFDF9;
@@ -33,7 +33,7 @@
   body{
     background:var(--bg);
     color:var(--text);
-    font-family:'Noto Sans JP','Hiragino Sans',sans-serif;
+    font-family:'Kosugi Maru','Hiragino Sans',sans-serif;
     overscroll-behavior-y:none;
   }
   #app{
@@ -113,7 +113,7 @@
     font-family:'Zen Maru Gothic', sans-serif;
   }
   .list-card .count{
-    font-size:13px;
+    font-size:15px;
     color:var(--muted);
     padding:3px 6px;
   }
@@ -134,7 +134,6 @@
     transform:translateX(-50%);
     max-width:480px;
     width:calc(100% - 36px);
-    margin:0 18px;
   }
   .fab-inner{
     background:var(--rose);
@@ -206,7 +205,7 @@
     font-size:15px;
     padding:10px 0;
     background:transparent;
-    font-family:'Noto Sans JP',sans-serif;
+    font-family:'Kosugi Maru',sans-serif;
     color:var(--text);
   }
   .add-row input::placeholder{ color:var(--muted); }
@@ -399,7 +398,7 @@
     border:1px solid var(--divider);
     font-size:15px;
     margin-bottom:16px;
-    font-family:'Noto Sans JP',sans-serif;
+    font-family:'Kosugi Maru',sans-serif;
     color:var(--text);
     outline:none;
   }
@@ -414,6 +413,11 @@
   }
   .color-swatch.selected{
     border-color:var(--text);
+  }
+  .color-swatch.disabled{
+    opacity:0.25;
+    cursor:not-allowed;
+    filter:grayscale(60%);
   }
   .modal-actions{
     display:flex; gap:10px;
@@ -462,7 +466,7 @@
 <script>
 /* ====================== データ管理 ====================== */
 const STORAGE_KEY = "yumeListData";
-const PALETTE = ["#A8BFA5","#BFD6E8","#E6B8BE","#C7B299","#CDBFDD","#B8B2A9","#F0C9B0","#D9BB6E","#B9C39A","#C7A3AC"];
+const PALETTE = ["#A37B68","#C7B299","#B8B2A9","#F6CF68","#F0C9B0","#E6B8BE","#CDBFDD","#BFD6E8","#AEDFD1","#A8BFA5"];
 
 function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
 
@@ -784,11 +788,19 @@ function openListModal(listId){
   const list = editing ? state.data.lists.find(l => l.id === listId) : null;
   let selectedColor = list ? list.color : PALETTE[state.data.lists.length % PALETTE.length];
 
+  // 他のリストで既に使われている色(編集中の自分自身は除く)
+  const usedColors = state.data.lists
+    .filter(l => !editing || l.id !== listId)
+    .map(l => l.color);
+
   modalSheet.innerHTML = `
     <h2>${editing ? "リストを編集" : "新しいリスト"}</h2>
     <input type="text" id="listNameInput" placeholder="リスト名(例: 食料品)" maxlength="20" value="${editing?escapeAttr(list.name):''}">
     <div class="color-row" id="colorRow">
-      ${PALETTE.map(c => `<div class="color-swatch ${c===selectedColor?'selected':''}" data-color="${c}" style="background:${c}"></div>`).join("")}
+      ${PALETTE.map(c => {
+        const isUsed = usedColors.includes(c);
+        return `<div class="color-swatch ${c===selectedColor?'selected':''} ${isUsed?'disabled':''}" data-color="${c}" style="background:${c}"></div>`;
+      }).join("")}
     </div>
     <div class="modal-actions">
       ${editing ? `<button class="btn" id="deleteListBtn">削除</button>` : ``}
@@ -800,6 +812,7 @@ function openListModal(listId){
 
   modalSheet.querySelectorAll(".color-swatch").forEach(sw => {
     sw.addEventListener("click", () => {
+      if(sw.classList.contains("disabled")) return;
       selectedColor = sw.dataset.color;
       modalSheet.querySelectorAll(".color-swatch").forEach(s => s.classList.remove("selected"));
       sw.classList.add("selected");
