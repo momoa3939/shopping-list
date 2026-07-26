@@ -26,7 +26,7 @@
     --danger-bg:#F6E6E4;
     --danger-border:#E9C9C7;
     --divider:#EFE4D5;
-    --shadow: 0 4px 16px rgba(140,118,102,0.08);
+    --card-border: 1px solid var(--divider);
   }
   *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
   html,body{margin:0; padding:0; height:100%;}
@@ -55,7 +55,7 @@
     top:14px;
     background:var(--surface);
     border-radius:18px;
-    box-shadow:var(--shadow);
+    border:var(--card-border);
     z-index:5;
   }
   header.topbar h1{
@@ -78,14 +78,15 @@
     width:38px; height:38px;
     border-radius:50%;
     border:none;
-    background:var(--surface);
-    box-shadow:var(--shadow);
+    background:transparent;
     display:flex; align-items:center; justify-content:center;
     cursor:pointer;
     color:var(--text);
     flex-shrink:0;
+    position:relative;
   }
   .iconbtn svg{width:19px; height:19px;}
+  .iconbtn.back-btn svg{width:23px; height:23px;}
   main{ flex:1; padding:4px 18px 100px; }
   main.with-hero{ padding-bottom:230px; }
 
@@ -98,7 +99,7 @@
     border-radius:18px;
     padding:16px 16px;
     margin-bottom:12px;
-    box-shadow:var(--shadow);
+    border:var(--card-border);
     cursor:pointer;
   }
   .dot{
@@ -138,14 +139,13 @@
   .fab-inner{
     background:var(--rose);
     color:var(--text);
-    border:none;
     width:100%;
     padding:15px;
     border-radius:16px;
     font-size:15px;
     font-weight:700;
     font-family:'Zen Maru Gothic', sans-serif;
-    box-shadow:0 6px 18px rgba(246,207,104,0.4);
+    border:1px solid var(--rose-dark);
     display:flex; align-items:center; justify-content:center; gap:8px;
     cursor:pointer;
   }
@@ -195,7 +195,7 @@
     background:var(--surface);
     border-radius:16px;
     padding:6px 8px 6px 16px;
-    box-shadow:var(--shadow);
+    border:var(--card-border);
     margin-bottom:16px;
   }
   .add-row input{
@@ -260,7 +260,7 @@
     border-radius:16px;
     padding:14px 14px;
     margin-bottom:8px;
-    box-shadow:var(--shadow);
+    border:var(--card-border);
   }
   .check{
     width:24px; height:24px;
@@ -335,7 +335,7 @@
     border-radius:16px;
     padding:14px 14px;
     margin-bottom:8px;
-    box-shadow:var(--shadow);
+    border:var(--card-border);
   }
   .history-check{
     width:24px; height:24px;
@@ -385,6 +385,8 @@
     margin:0 auto;
     border-radius:22px 22px 0 0;
     padding:22px 20px 28px;
+    max-height:82vh;
+    overflow-y:auto;
   }
   .modal-sheet h2{
     font-family:'Zen Maru Gothic', sans-serif;
@@ -401,6 +403,27 @@
     font-family:'Kosugi Maru',sans-serif;
     color:var(--text);
     outline:none;
+  }
+  .help-content{
+    font-size:14.5px;
+    line-height:1.7;
+    color:var(--text);
+  }
+  .help-content p{
+    margin:0 0 14px;
+  }
+  .help-content h3{
+    font-family:'Zen Maru Gothic', sans-serif;
+    font-size:16px;
+    margin:22px 0 12px;
+  }
+  .help-content .help-subhead{
+    font-weight:700;
+    margin-bottom:6px;
+  }
+  .help-content .help-note{
+    font-size:13px;
+    color:var(--muted);
   }
   .color-row{
     display:flex; gap:10px; margin-bottom:22px; flex-wrap:wrap;
@@ -439,6 +462,73 @@
     background:var(--rose);
     color:var(--text);
     border-color:var(--rose);
+  }
+
+  /* ---- 設定ボタンの初回バッジ ---- */
+  .gear-badge{
+    position:absolute;
+    top:2px; right:2px;
+    width:9px; height:9px;
+    border-radius:50%;
+    background:var(--danger-text);
+    border:2px solid var(--bg);
+    pointer-events:none;
+  }
+
+  /* ---- 設定メニュー ---- */
+  .settings-menu{
+    display:flex;
+    flex-direction:column;
+  }
+  .settings-item{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    background:transparent;
+    border:none;
+    text-align:left;
+    padding:14px 4px;
+    font-size:15px;
+    font-family:'Kosugi Maru',sans-serif;
+    color:var(--text);
+    cursor:pointer;
+  }
+  .settings-item .settings-icon{
+    font-size:17px;
+    width:22px;
+    flex-shrink:0;
+    text-align:center;
+  }
+  .settings-divider{
+    height:1px;
+    background:var(--divider);
+    margin:4px 0;
+    border:none;
+  }
+
+  /* ---- 設定初回のパンダヒント ---- */
+  .settings-panda-hint{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    background:var(--bg);
+    border:1px solid var(--divider);
+    border-radius:14px;
+    padding:12px 14px;
+    margin-bottom:14px;
+    font-size:13.5px;
+    color:var(--muted);
+    line-height:1.5;
+  }
+  .settings-panda-hint img{
+    width:34px; height:34px;
+    object-fit:contain;
+    flex-shrink:0;
+  }
+
+  .help-panda-tip{
+    color:var(--muted);
+    font-size:13.5px;
   }
 </style>
 </head>
@@ -489,6 +579,21 @@ function loadData(){
   return data;
 }
 function saveData(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state.data)); }
+
+/* ---- 初回案内(オンボーディング)フラグ ---- */
+const ONBOARDING_KEY = "shoppingListOnboarding";
+function getOnboarding(){
+  try{
+    const raw = localStorage.getItem(ONBOARDING_KEY);
+    if(raw) return JSON.parse(raw);
+  }catch(e){}
+  return { gearBadgeSeen:false, settingsHintSeen:false };
+}
+function setOnboarding(patch){
+  const current = getOnboarding();
+  const updated = Object.assign(current, patch);
+  localStorage.setItem(ONBOARDING_KEY, JSON.stringify(updated));
+}
 function todayStr(){
   const d = new Date();
   return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
@@ -556,11 +661,19 @@ function render(){
 }
 
 function renderHome(){
+  const showGearBadge = !getOnboarding().gearBadgeSeen;
   topbar.innerHTML = `
     <h1><span class="title-icon">${ICONS.basket}</span>お買い物リスト</h1>
     <button class="iconbtn" id="historyBtn">${ICONS.history}</button>
+    <button class="iconbtn" id="settingsBtn">${ICONS.gear}${showGearBadge ? '<span class="gear-badge"></span>' : ''}</button>
   `;
   document.getElementById("historyBtn").onclick = () => { state.view = "history"; render(); };
+  document.getElementById("settingsBtn").onclick = () => {
+    if(!getOnboarding().gearBadgeSeen){
+      setOnboarding({ gearBadgeSeen:true });
+    }
+    openSettingsModal();
+  };
   fab.style.display = "block";
   fabBtn.innerHTML = `${ICONS.plus} 新しいリスト`;
   fabBtn.onclick = () => openListModal(null);
@@ -612,7 +725,7 @@ function renderDetail(){
   if(!list){ state.view = "home"; render(); return; }
 
   topbar.innerHTML = `
-    <button class="iconbtn" id="backBtn">${ICONS.back}</button>
+    <button class="iconbtn back-btn" id="backBtn">${ICONS.back}</button>
     <h1>${escapeHtml(list.name)}</h1>
   `;
   document.getElementById("backBtn").onclick = () => { state.view = "home"; render(); };
@@ -713,7 +826,7 @@ function renderDetail(){
 
 function renderHistory(){
   topbar.innerHTML = `
-    <button class="iconbtn" id="backBtn">${ICONS.back}</button>
+    <button class="iconbtn back-btn" id="backBtn">${ICONS.back}</button>
     <h1>完了タスク</h1>
   `;
   document.getElementById("backBtn").onclick = () => { state.view = "home"; render(); };
@@ -846,6 +959,174 @@ function openListModal(listId){
     };
   }
 }
+
+/* ====================== モーダル(使い方ヘルプ) ====================== */
+function openHelpModal(){
+  modalSheet.innerHTML = `
+    <h2>📖 使い方ガイド</h2>
+    <div class="help-content">
+      <p>🐼 このアプリは、買い物や「やること」を気軽に管理できるシンプルなリストアプリです。</p>
+      <p>使い方はとても簡単♪</p>
+      <p>① 「＋新しいリスト」を押してリストを作ります。<br>(例:買うもの、美容、ドラッグストア など)</p>
+      <p>② リストを開いて、追加したい項目を入力します。</p>
+      <p>③ 終わった項目はチェック!<br>チェックした項目は削除されず、「履歴」画面へ移動します。</p>
+      <p>④ 削除するときは確認メッセージが表示されるので、間違って消してしまう心配はありません。</p>
+      <p>⑤ リストごとに色を付けられます。<br>同じ色は選べないので、一目で見分けられます。</p>
+      <p>データはご自身のスマホの中だけに保存されます。他の人と共有されることはないので、それぞれのスマホで自由に使ってね。</p>
+
+      <h3>💾 バックアップについて</h3>
+      <p>このアプリのデータは、ご利用のスマホ（またはパソコン）の中だけに保存されます。<br>
+      そのため、機種変更やブラウザのデータ削除などを行うと、リストが消えてしまう場合があります。</p>
+      <p>大切なリストがある時は、「設定」→「バックアップ」からデータ（JSONファイル）を保存しておいてください。<br>
+      保存したファイルは、<br>
+      ・iCloud<br>
+      ・Googleドライブ<br>
+      ・OneDrive<br>
+      ・メール<br>
+      など、ご自身が管理しやすい場所に保管してください。</p>
+
+      <p class="help-subhead">📱 パソコンとスマホについて</p>
+      <p>スマホ版とパソコン版のデータは自動では同期されません。<br>
+      同じリストを両方で使いたい場合は、「バックアップ」→「復元」を使って、手動でデータを移してください。</p>
+      <p>⚠️ 復元を行うと、現在のデータは選択したバックアップの内容に置き換わります。<br>
+      現在のデータとバックアップの内容を合体（結合）することはできません。</p>
+      <p class="help-panda-tip">🐼 大切なリストは、ときどきバックアップしておくと安心だよ♪</p>
+
+      <h3>📱 ホーム画面に追加する方法</h3>
+
+      <p class="help-subhead">【iPhoneの場合】</p>
+      <p>① Safariでこのページを開く<br>
+      ② 下の「共有」ボタン(四角に上矢印のマーク)をタップ<br>
+      ③ 「ホーム画面に追加」を選ぶ<br>
+      ④ 右上の「追加」をタップして完了</p>
+
+      <p class="help-subhead">【Androidの場合】</p>
+      <p>① Chromeでこのページを開く<br>
+      ② 右上の「⋮」(縦三点リーダー)をタップ<br>
+      ③ 「ホーム画面に追加」または「アプリをインストール」を選ぶ<br>
+      ④ 表示された案内に沿って追加すれば完了</p>
+
+      <p class="help-note">※ iPhoneはSafari、AndroidはChromeで開くのがおすすめです(他のブラウザだと「ホーム画面に追加」が出てこないことがあります)。</p>
+      <p>分からないことがあれば、いつでも聞いてね。</p>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" id="helpCloseBtn">閉じる</button>
+    </div>
+  `;
+  modalBackdrop.classList.remove("hidden");
+  document.getElementById("helpCloseBtn").onclick = closeModal;
+}
+
+/* ====================== モーダル(設定メニュー) ====================== */
+function openSettingsModal(){
+  const showHint = !getOnboarding().settingsHintSeen;
+
+  modalSheet.innerHTML = `
+    <h2>⚙️ 設定</h2>
+    ${showHint ? `
+      <div class="settings-panda-hint">
+        <img src="panda13.png" alt="">
+        <div>困ったら「使い方ガイド」を見てね♪</div>
+      </div>
+    ` : ``}
+    <div class="settings-menu">
+      <button class="settings-item" id="menuHelpBtn"><span class="settings-icon">📖</span>使い方ガイド</button>
+      <button class="settings-item" id="menuBackupBtn"><span class="settings-icon">💾</span>バックアップ</button>
+      <button class="settings-item" id="menuRestoreBtn"><span class="settings-icon">📥</span>復元</button>
+      <hr class="settings-divider">
+      <button class="settings-item" id="menuAboutBtn"><span class="settings-icon">ℹ️</span>このアプリについて</button>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" id="settingsCloseBtn">閉じる</button>
+    </div>
+  `;
+  modalBackdrop.classList.remove("hidden");
+
+  if(showHint) setOnboarding({ settingsHintSeen:true });
+
+  document.getElementById("menuHelpBtn").onclick = () => openHelpModal();
+  document.getElementById("menuBackupBtn").onclick = () => doBackup();
+  document.getElementById("menuRestoreBtn").onclick = () => triggerRestore();
+  document.getElementById("menuAboutBtn").onclick = () => openAboutModal();
+  document.getElementById("settingsCloseBtn").onclick = closeModal;
+}
+
+function openAboutModal(){
+  modalSheet.innerHTML = `
+    <h2>ℹ️ このアプリについて</h2>
+    <div class="help-content">
+      <p>🐼 「お買い物リスト」は、日々の買い物ややることを気軽にメモできる、シンプルなリストアプリです。</p>
+      <p>データはご自身のスマホ・パソコンの中だけに保存され、外部に送信されることはありません。</p>
+      <p>大切なリストは「バックアップ」から保存しておくと安心です。</p>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" id="aboutCloseBtn">閉じる</button>
+    </div>
+  `;
+  document.getElementById("aboutCloseBtn").onclick = closeModal;
+}
+
+/* ====================== バックアップ・復元 ====================== */
+function doBackup(){
+  try{
+    const json = JSON.stringify(state.data, null, 2);
+    const blob = new Blob([json], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const d = new Date();
+    const dateStr = `${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`;
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `shopping-list-backup-${dateStr}.json`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  }catch(e){
+    alert("バックアップの保存に失敗しました。");
+  }
+}
+
+function triggerRestore(){
+  const input = document.createElement("input");
+  input.type = "file";
+  input.accept = "application/json,.json";
+  input.style.display = "none";
+  input.addEventListener("change", () => {
+    const file = input.files && input.files[0];
+    if(!file){ input.remove(); return; }
+    const reader = new FileReader();
+    reader.onload = () => {
+      let parsed;
+      try{
+        parsed = JSON.parse(reader.result);
+      }catch(e){
+        alert("このファイルは読み込めませんでした。正しいバックアップファイルか確認してください。");
+        input.remove();
+        return;
+      }
+      if(!parsed || !Array.isArray(parsed.lists)){
+        alert("このファイルはバックアップ形式ではないようです。");
+        input.remove();
+        return;
+      }
+      if(!confirm("復元すると現在のデータは上書きされます。よろしいですか?")){
+        input.remove();
+        return;
+      }
+      if(!parsed.history) parsed.history = [];
+      state.data = parsed;
+      saveData();
+      closeModal();
+      state.view = "home";
+      render();
+      input.remove();
+    };
+    reader.readAsText(file);
+  });
+  document.body.appendChild(input);
+  input.click();
+}
+
 function closeModal(){ modalBackdrop.classList.add("hidden"); }
 modalBackdrop.addEventListener("click", e => { if(e.target === modalBackdrop) closeModal(); });
 
