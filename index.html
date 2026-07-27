@@ -718,6 +718,7 @@ function renderHome(){
     document.body.classList.remove("scroll-lock");
     homeHeroFixed.style.display = "none";
     mainEl.classList.remove("with-hero");
+    mainEl.style.paddingBottom = "";
     mainEl.innerHTML = `<div class="empty-hint"><img src="panda-empty.png" alt=""><br>まだリストがありません。<br>下のボタンから作ってみてください🛍️</div>`;
     return;
   }
@@ -752,7 +753,25 @@ function renderHome(){
       openListModal(btn.dataset.id);
     });
   });
+
+  adjustHomeScrollPadding();
 }
+
+/* (10) ホーム画面: パンダちゃん・ボタンの実際の位置を測って、
+   リスト表示エリアの下余白(スクロールできる範囲)を自動調整する */
+function adjustHomeScrollPadding(){
+  if(state.view !== "home" || state.data.lists.length === 0) return;
+  requestAnimationFrame(() => {
+    const heroRect = homeHeroFixed.getBoundingClientRect();
+    const fabRect = fab.getBoundingClientRect();
+    const vh = window.innerHeight;
+    const heroCoverage = Math.max(0, vh - heroRect.top);
+    const fabCoverage = Math.max(0, vh - fabRect.top);
+    const coverage = Math.max(heroCoverage, fabCoverage) + 20;
+    mainEl.style.paddingBottom = coverage + "px";
+  });
+}
+window.addEventListener("resize", adjustHomeScrollPadding);
 
 function getCurrentList(){
   return state.data.lists.find(l => l.id === state.currentListId);
@@ -772,6 +791,7 @@ function renderDetail(){
   fab.style.display = "none";
   homeHeroFixed.style.display = "none";
   mainEl.classList.remove("with-hero");
+  mainEl.style.paddingBottom = "";
 
   const activeItems = list.items.filter(i => !i.done);
   const activeTexts = new Set(activeItems.map(i => i.text));
@@ -877,6 +897,7 @@ function renderHistory(){
   fab.style.display = "none";
   homeHeroFixed.style.display = "none";
   mainEl.classList.remove("with-hero");
+  mainEl.style.paddingBottom = "";
 
   const history = state.data.history;
   if(history.length === 0){
