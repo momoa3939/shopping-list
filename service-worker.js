@@ -1,4 +1,4 @@
-const CACHE_NAME = "shopping-list-v14";
+const CACHE_NAME = "shopping-list-v15";
 const CACHE_FIRST_ASSETS = [
   "./icon-192.png",
   "./icon-512.png",
