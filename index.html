@@ -197,7 +197,7 @@
   }
   .home-hero-fixed img{
     width:120px;
-    height:auto;
+    height:120px;
     object-fit:contain;
     display:block;
     margin:0 auto 4px;
@@ -777,6 +777,14 @@ function adjustHomeScrollPadding(){
   });
 }
 window.addEventListener("resize", adjustHomeScrollPadding);
+window.addEventListener("load", adjustHomeScrollPadding);
+{
+  const heroImg = homeHeroFixed.querySelector("img");
+  if(heroImg){
+    if(heroImg.complete) adjustHomeScrollPadding();
+    else heroImg.addEventListener("load", adjustHomeScrollPadding);
+  }
+}
 
 function getCurrentList(){
   return state.data.lists.find(l => l.id === state.currentListId);
