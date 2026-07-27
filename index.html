@@ -117,6 +117,48 @@
     margin-bottom:12px;
     border:var(--card-border);
     cursor:pointer;
+    touch-action:pan-y;
+    -webkit-user-select:none;
+    user-select:none;
+    -webkit-touch-callout:none;
+  }
+  /* (11) 並び替え中のカード */
+  .list-card.dragging{
+    position:absolute;
+    left:0; right:0;
+    z-index:10;
+    box-shadow:0 8px 20px rgba(59,48,38,0.18);
+    opacity:0.97;
+    touch-action:none;
+  }
+  .list-scroll-area.reordering{
+    position:relative;
+  }
+  .list-scroll-area.reordering .list-card:not(.dragging){
+    transition:transform 0.18s ease;
+  }
+  body.dragging-active{
+    -webkit-user-select:none;
+    user-select:none;
+  }
+  /* (11) 並び替えヒント(設定初回ヒントと同じ見た目) */
+  .reorder-panda-hint{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    background:var(--surface);
+    border:1px solid var(--divider);
+    border-radius:14px;
+    padding:12px 14px;
+    margin-bottom:12px;
+    font-size:13.5px;
+    color:var(--muted);
+    line-height:1.5;
+  }
+  .reorder-panda-hint img{
+    width:34px; height:34px;
+    object-fit:contain;
+    flex-shrink:0;
   }
   .dot{
     width:16px; height:16px;
@@ -624,7 +666,7 @@ function getOnboarding(){
     const raw = localStorage.getItem(ONBOARDING_KEY);
     if(raw) return JSON.parse(raw);
   }catch(e){}
-  return { gearBadgeSeen:false, settingsHintSeen:false };
+  return { gearBadgeSeen:false, settingsHintSeen:false, reorderHintSeen:false };
 }
 function setOnboarding(patch){
   const current = getOnboarding();
@@ -643,20 +685,33 @@ const state = {
 };
 
 /* ====================== 完了アイテムの履歴移動 ====================== */
+// (12) チェックしてもすぐには履歴に移動せず、一定時間(猶予)経過後に移動する
+//      うっかりチェックしてもしばらくは元に戻せるようにするための仕様
+const DONE_GRACE_MS = 6 * 60 * 60 * 1000; // 6時間(3時間〜半日の目安の中間値。変更したい場合はここを調整)
+
+function nowISO(){ return new Date().toISOString(); }
+
 function migrateCompletedToHistory(){
   let changed = false;
+  const now = Date.now();
   state.data.lists.forEach(list => {
     const stillActive = [];
     list.items.forEach(item => {
       if(item.done){
-        state.data.history.unshift({
-          id: uid(),
-          text: item.text,
-          listName: list.name,
-          listColor: list.color,
-          date: item.doneAt || todayStr()
-        });
-        changed = true;
+        const doneTime = item.doneAt ? new Date(item.doneAt).getTime() : now;
+        const elapsed = now - doneTime;
+        if(!isNaN(doneTime) && elapsed >= DONE_GRACE_MS){
+          state.data.history.unshift({
+            id: uid(),
+            text: item.text,
+            listName: list.name,
+            listColor: list.color,
+            date: item.doneAt ? item.doneAt.slice(0,10) : todayStr()
+          });
+          changed = true;
+        }else{
+          stillActive.push(item);
+        }
       }else{
         stillActive.push(item);
       }
@@ -664,8 +719,15 @@ function migrateCompletedToHistory(){
     list.items = stillActive;
   });
   if(changed) saveData();
+  return changed;
 }
 migrateCompletedToHistory();
+
+// アプリを開いたままにしている間も、猶予時間が経過したら自動で履歴へ移す
+setInterval(() => {
+  const changed = migrateCompletedToHistory();
+  if(changed) render();
+}, 5 * 60 * 1000); // 5分ごとに確認
 
 /* ====================== アイコン ====================== */
 const ICONS = {
@@ -741,7 +803,17 @@ function renderHome(){
     `;
   }).join("");
 
-  mainEl.innerHTML = `<div class="list-scroll-area" id="listScrollArea">${cardsHtml}</div>`;
+  // (11) 並び替えヒント: リストが2件以上になった最初のタイミングで一度だけ表示
+  const showReorderHint = state.data.lists.length >= 2 && !getOnboarding().reorderHintSeen;
+  const reorderHintHtml = showReorderHint ? `
+    <div class="reorder-panda-hint">
+      <img src="panda13.png" alt="">
+      <div>📌 長押しで並び替えできるよ</div>
+    </div>
+  ` : ``;
+  if(showReorderHint) setOnboarding({ reorderHintSeen:true });
+
+  mainEl.innerHTML = `${reorderHintHtml}<div class="list-scroll-area" id="listScrollArea">${cardsHtml}</div>`;
   const listScrollArea = document.getElementById("listScrollArea");
 
   listScrollArea.querySelectorAll(".list-card").forEach(card => {
@@ -759,7 +831,137 @@ function renderHome(){
     });
   });
 
+  attachReorderHandlers(listScrollArea);
+
   adjustHomeScrollPadding();
+}
+
+/* ====================== (11) リストカードの長押し並び替え ====================== */
+function attachReorderHandlers(container){
+  if(state.data.lists.length < 2) return;
+
+  container.querySelectorAll(".list-card").forEach(card => {
+    let pressTimer = null;
+    let startX = 0, startY = 0;
+    let longPressFired = false;
+
+    const cancelPress = () => {
+      if(pressTimer){ clearTimeout(pressTimer); pressTimer = null; }
+    };
+
+    card.addEventListener("pointerdown", (e) => {
+      if(e.target.closest(".list-edit-btn")) return;
+      if(e.pointerType === "mouse" && e.button !== 0) return;
+      startX = e.clientX; startY = e.clientY;
+      longPressFired = false;
+      pressTimer = setTimeout(() => {
+        longPressFired = true;
+        startListDrag(card, e, container);
+      }, 450);
+    });
+
+    card.addEventListener("pointermove", (e) => {
+      if(pressTimer){
+        if(Math.abs(e.clientX - startX) > 10 || Math.abs(e.clientY - startY) > 10) cancelPress();
+      }
+    });
+
+    card.addEventListener("pointerup", cancelPress);
+    card.addEventListener("pointercancel", cancelPress);
+
+    // 長押し→ドラッグが発火した場合は、直後の click(=リスト詳細へ遷移)を打ち消す
+    card.addEventListener("click", (e) => {
+      if(longPressFired){
+        e.stopPropagation();
+        e.preventDefault();
+        longPressFired = false;
+      }
+    }, true);
+  });
+}
+
+function startListDrag(card, startEvent, container){
+  if(navigator.vibrate) navigator.vibrate(12);
+
+  const cards = Array.from(container.querySelectorAll(".list-card"));
+  const draggedId = card.dataset.id;
+  const containerRect = container.getBoundingClientRect();
+
+  // ドラッグ開始時点の各カードの位置(コンテナのコンテンツ基準・スクロール量を考慮)を記録
+  const scrollTopAtStart = container.scrollTop;
+  const originalRects = cards.map(c => {
+    const r = c.getBoundingClientRect();
+    return { id: c.dataset.id, top: (r.top - containerRect.top) + scrollTopAtStart, height: r.height };
+  });
+  const draggedIndex = originalRects.findIndex(r => r.id === draggedId);
+  const slotHeight = originalRects.length > 1
+    ? (originalRects[1].top - originalRects[0].top)
+    : (originalRects[0].height + 12);
+  const cardRect = card.getBoundingClientRect();
+  const offsetWithinCard = startEvent.clientY - cardRect.top;
+
+  const otherIdsInOrder = originalRects.filter(r => r.id !== draggedId).map(r => r.id);
+  let currentTargetIndex = draggedIndex;
+
+  container.classList.add("reordering");
+  document.body.classList.add("dragging-active");
+  card.classList.add("dragging");
+  card.style.top = originalRects[draggedIndex].top + "px";
+  card.style.height = originalRects[draggedIndex].height + "px";
+  try{ card.setPointerCapture(startEvent.pointerId); }catch(e){}
+
+  function applyOtherCardTransforms(targetIndex){
+    // targetIndex: ドラッグ中カードが今どの位置に割り込んでいるか
+    const newOrder = otherIdsInOrder.slice(0, targetIndex)
+      .concat([draggedId])
+      .concat(otherIdsInOrder.slice(targetIndex));
+
+    cards.forEach(c => {
+      if(c === card) return;
+      const orig = originalRects.find(r => r.id === c.dataset.id);
+      const newIdx = newOrder.indexOf(c.dataset.id);
+      const newTop = newIdx * slotHeight + originalRects[0].top;
+      c.style.transform = `translateY(${newTop - orig.top}px)`;
+    });
+  }
+
+  function onMove(e){
+    const maxTop = container.scrollHeight - originalRects[draggedIndex].height;
+    let top = (e.clientY - containerRect.top) + container.scrollTop - offsetWithinCard;
+    top = Math.max(0, Math.min(top, Math.max(0, maxTop)));
+    card.style.top = top + "px";
+
+    const dragCenter = top + originalRects[draggedIndex].height / 2 - originalRects[0].top;
+    let targetIndex = Math.round(dragCenter / slotHeight);
+    targetIndex = Math.max(0, Math.min(targetIndex, otherIdsInOrder.length));
+    if(targetIndex !== currentTargetIndex){
+      currentTargetIndex = targetIndex;
+      applyOtherCardTransforms(targetIndex);
+    }
+  }
+
+  function onUp(){
+    card.removeEventListener("pointermove", onMove);
+    card.removeEventListener("pointerup", onUp);
+    card.removeEventListener("pointercancel", onUp);
+
+    const newOrderIds = otherIdsInOrder.slice(0, currentTargetIndex)
+      .concat([draggedId])
+      .concat(otherIdsInOrder.slice(currentTargetIndex));
+
+    // state.data.lists を新しい順番に並び替え
+    const listsById = {};
+    state.data.lists.forEach(l => { listsById[l.id] = l; });
+    state.data.lists = newOrderIds.map(id => listsById[id]);
+
+    saveData();
+    document.body.classList.remove("dragging-active");
+    render();
+  }
+
+  card.addEventListener("pointermove", onMove);
+  card.addEventListener("pointerup", onUp);
+  card.addEventListener("pointercancel", onUp);
 }
 
 /* (10) ホーム画面: リスト表示エリアの高さを、パンダちゃんの少し上までに区切る。
@@ -874,7 +1076,7 @@ function renderDetail(){
     const item = list.items.find(i => i.id === itemId);
     row.querySelector(".check").addEventListener("click", () => {
       item.done = !item.done;
-      item.doneAt = item.done ? todayStr() : null;
+      item.doneAt = item.done ? nowISO() : null;
       saveData();
       render();
     });
@@ -1047,7 +1249,7 @@ function openHelpModal(){
       <p>使い方はとても簡単♪</p>
       <p>① 「＋新しいリスト」を押してリストを作ります。<br>(例:買うもの、美容、ドラッグストア など)</p>
       <p>② リストを開いて、追加したい項目を入力します。</p>
-      <p>③ 終わった項目はチェック!<br>チェックした項目は削除されず、「履歴」画面へ移動します。</p>
+      <p>③ 終わった項目はチェック!<br>チェックした項目は削除されず、「履歴」画面へ移動します。<br>チェックを入れてから少し時間が経つと、完了リストに移動します。うっかり押しちゃっても、しばらくは取り消せます。</p>
       <p>④ 削除するときは確認メッセージが表示されるので、間違って消してしまう心配はありません。</p>
       <p>⑤ リストごとに色を付けられます。<br>同じ色は選べないので、一目で見分けられます。</p>
       <p>データはご自身のスマホの中だけに保存されます。他の人と共有されることはないので、それぞれのスマホで自由に使ってね。</p>
