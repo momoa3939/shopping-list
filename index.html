@@ -1188,7 +1188,7 @@ function openListModal(listId){
 
   modalSheet.innerHTML = `
     <h2>${editing ? "リストを編集" : "新しいリスト"}</h2>
-    <input type="text" id="listNameInput" placeholder="リスト名(例: 食料品)" maxlength="20" value="${editing?escapeAttr(list.name):''}">
+    <input type="text" id="listNameInput" placeholder="リスト名(例：食料品)" maxlength="20" value="${editing?escapeAttr(list.name):''}">
     <div class="color-row" id="colorRow">
       ${PALETTE.map(c => {
         const isUsed = usedColors.includes(c);
@@ -1247,9 +1247,9 @@ function openHelpModal(){
     <div class="help-content">
       <p>🐼 このアプリは、買い物や「やること」を気軽に管理できるシンプルなリストアプリです。</p>
       <p>使い方はとても簡単♪</p>
-      <p>① 「＋新しいリスト」を押してリストを作ります。<br>(例:買うもの、美容、ドラッグストア など)</p>
+      <p>① 「＋新しいリスト」を押してリストを作ります。<br>(例：買うもの、美容、ドラッグストア など)</p>
       <p>② リストを開いて、追加したい項目を入力します。</p>
-      <p>③ 終わった項目はチェック!<br>チェックした項目は削除されず、「履歴」画面へ移動します。<br>チェックを入れてから少し時間が経つと、完了リストに移動します。うっかり押しちゃっても、しばらくは取り消せます。</p>
+      <p>③ 終わった項目はチェック!<br>チェックした項目は削除されず、画面上部の🕒(時計マーク)の「履歴」に移動します。<br>※ チェックしてすぐには移動しません。少しの間は取り消せるので、うっかりチェックしてしまっても安心です。</p>
       <p>④ 削除するときは確認メッセージが表示されるので、間違って消してしまう心配はありません。</p>
       <p>⑤ リストごとに色を付けられます。<br>同じ色は選べないので、一目で見分けられます。</p>
       <p>データはご自身のスマホの中だけに保存されます。他の人と共有されることはないので、それぞれのスマホで自由に使ってね。</p>
