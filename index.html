@@ -88,9 +88,10 @@
   .iconbtn svg{width:19px; height:19px;}
   .iconbtn.back-btn svg{width:23px; height:23px;}
   main{ flex:1; padding:4px 18px 100px; }
-  main.with-hero{ padding-bottom:230px; }
+  main.with-hero{ padding-bottom:16px; }
 
-  /* (10) ホーム画面: パンダちゃんとカードが重ならないよう、リスト表示エリアだけ内部スクロール */
+  /* (10) ホーム画面: リスト表示エリアをパンダちゃんの少し上で区切り、
+     その範囲の中だけでスクロールさせる(パンダの領域には絶対に入らない) */
   body.scroll-lock, html.scroll-lock{
     height:100dvh;
     overflow:hidden;
@@ -99,9 +100,9 @@
     height:100dvh;
     overflow:hidden;
   }
-  body.scroll-lock main{
-    min-height:0;
+  .list-scroll-area{
     overflow-y:auto;
+    overflow-x:hidden;
     -webkit-overflow-scrolling:touch;
   }
 
@@ -183,7 +184,7 @@
   .home-hero-fixed{
     position:fixed;
     left:50%;
-    bottom:108px;
+    bottom:124px;
     transform:translateX(-50%);
     width:100%;
     max-width:480px;
@@ -726,8 +727,9 @@ function renderHome(){
   document.body.classList.add("scroll-lock");
   homeHeroFixed.style.display = "block";
   mainEl.classList.add("with-hero");
+  mainEl.style.paddingBottom = "";
 
-  mainEl.innerHTML = state.data.lists.map(list => {
+  const cardsHtml = state.data.lists.map(list => {
     const remaining = list.items.filter(i => !i.done).length;
     return `
       <div class="list-card" data-id="${list.id}">
@@ -739,7 +741,10 @@ function renderHome(){
     `;
   }).join("");
 
-  mainEl.querySelectorAll(".list-card").forEach(card => {
+  mainEl.innerHTML = `<div class="list-scroll-area" id="listScrollArea">${cardsHtml}</div>`;
+  const listScrollArea = document.getElementById("listScrollArea");
+
+  listScrollArea.querySelectorAll(".list-card").forEach(card => {
     card.addEventListener("click", () => {
       state.currentListId = card.dataset.id;
       state.view = "detail";
@@ -747,7 +752,7 @@ function renderHome(){
     });
   });
 
-  mainEl.querySelectorAll(".list-edit-btn").forEach(btn => {
+  listScrollArea.querySelectorAll(".list-edit-btn").forEach(btn => {
     btn.addEventListener("click", (e) => {
       e.stopPropagation();
       openListModal(btn.dataset.id);
@@ -757,18 +762,18 @@ function renderHome(){
   adjustHomeScrollPadding();
 }
 
-/* (10) ホーム画面: パンダちゃん・ボタンの実際の位置を測って、
-   リスト表示エリアの下余白(スクロールできる範囲)を自動調整する */
+/* (10) ホーム画面: リスト表示エリアの高さを、パンダちゃんの少し上までに区切る。
+   これにより、どれだけスクロールしてもリストがパンダの領域に入り込まない */
 function adjustHomeScrollPadding(){
   if(state.view !== "home" || state.data.lists.length === 0) return;
+  const listScrollArea = document.getElementById("listScrollArea");
+  if(!listScrollArea) return;
   requestAnimationFrame(() => {
     const heroRect = homeHeroFixed.getBoundingClientRect();
-    const fabRect = fab.getBoundingClientRect();
-    const vh = window.innerHeight;
-    const heroCoverage = Math.max(0, vh - heroRect.top);
-    const fabCoverage = Math.max(0, vh - fabRect.top);
-    const coverage = Math.max(heroCoverage, fabCoverage) + 20;
-    mainEl.style.paddingBottom = coverage + "px";
+    const areaRect = listScrollArea.getBoundingClientRect();
+    const gapAbovePanda = 20; // パンダちゃんの「ちょっと上」の余白
+    const availableHeight = heroRect.top - areaRect.top - gapAbovePanda;
+    listScrollArea.style.height = Math.max(80, availableHeight) + "px";
   });
 }
 window.addEventListener("resize", adjustHomeScrollPadding);
