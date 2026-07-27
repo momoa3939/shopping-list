@@ -90,6 +90,21 @@
   main{ flex:1; padding:4px 18px 100px; }
   main.with-hero{ padding-bottom:230px; }
 
+  /* (10) ホーム画面: パンダちゃんとカードが重ならないよう、リスト表示エリアだけ内部スクロール */
+  body.scroll-lock, html.scroll-lock{
+    height:100dvh;
+    overflow:hidden;
+  }
+  body.scroll-lock #app{
+    height:100dvh;
+    overflow:hidden;
+  }
+  body.scroll-lock main{
+    min-height:0;
+    overflow-y:auto;
+    -webkit-overflow-scrolling:touch;
+  }
+
   /* ---- Home: list of lists ---- */
   .list-card{
     display:flex;
@@ -168,7 +183,7 @@
   .home-hero-fixed{
     position:fixed;
     left:50%;
-    bottom:140px;
+    bottom:108px;
     transform:translateX(-50%);
     width:100%;
     max-width:480px;
@@ -415,7 +430,9 @@
   .help-content h3{
     font-family:'Zen Maru Gothic', sans-serif;
     font-size:16px;
-    margin:22px 0 12px;
+    margin:28px 0 12px;
+    padding-top:18px;
+    border-top:1px solid var(--divider);
   }
   .help-content .help-subhead{
     font-weight:700;
@@ -526,9 +543,28 @@
     flex-shrink:0;
   }
 
-  .help-panda-tip{
-    color:var(--muted);
-    font-size:13.5px;
+  /* (8) help-panda-tip: 見た目を通常の<p>と統一するため装飾は付けない */
+
+  /* (7) 「このアプリについて」モーダル内のパンダ画像 */
+  .about-panda{
+    display:block;
+    width:48px;
+    height:48px;
+    object-fit:contain;
+    margin:0 auto 14px;
+  }
+
+  /* (9) リスト詳細画面 下部の見守りパンダ */
+  .detail-watch-panda{
+    display:flex;
+    justify-content:center;
+    margin:16px 0 4px;
+    opacity:0.85;
+  }
+  .detail-watch-panda img{
+    width:36px;
+    height:auto;
+    display:block;
   }
 </style>
 </head>
@@ -540,7 +576,7 @@
 
   <div class="home-hero-fixed" id="homeHeroFixed" style="display:none;">
     <img src="panda13.png" alt="">
-    今日は何をメモしよっか?
+    今日は何をメモしよっか？
   </div>
 
   <div class="fab" id="fab" style="display:none;">
@@ -679,12 +715,14 @@ function renderHome(){
   fabBtn.onclick = () => openListModal(null);
 
   if(state.data.lists.length === 0){
+    document.body.classList.remove("scroll-lock");
     homeHeroFixed.style.display = "none";
     mainEl.classList.remove("with-hero");
     mainEl.innerHTML = `<div class="empty-hint"><img src="panda-empty.png" alt=""><br>まだリストがありません。<br>下のボタンから作ってみてください🛍️</div>`;
     return;
   }
 
+  document.body.classList.add("scroll-lock");
   homeHeroFixed.style.display = "block";
   mainEl.classList.add("with-hero");
 
@@ -730,6 +768,7 @@ function renderDetail(){
   `;
   document.getElementById("backBtn").onclick = () => { state.view = "home"; render(); };
 
+  document.body.classList.remove("scroll-lock");
   fab.style.display = "none";
   homeHeroFixed.style.display = "none";
   mainEl.classList.remove("with-hero");
@@ -766,6 +805,10 @@ function renderDetail(){
   }
 
   html += list.items.map(item => itemRowHtml(item, list.color)).join("");
+
+  if(list.items.length > 0){
+    html += `<div class="detail-watch-panda"><img src="panda-watch.png" alt=""></div>`;
+  }
 
   mainEl.innerHTML = html;
 
@@ -830,6 +873,7 @@ function renderHistory(){
     <h1>完了タスク</h1>
   `;
   document.getElementById("backBtn").onclick = () => { state.view = "home"; render(); };
+  document.body.classList.remove("scroll-lock");
   fab.style.display = "none";
   homeHeroFixed.style.display = "none";
   mainEl.classList.remove("with-hero");
@@ -1055,7 +1099,8 @@ function openAboutModal(){
   modalSheet.innerHTML = `
     <h2>ℹ️ このアプリについて</h2>
     <div class="help-content">
-      <p>🐼 「お買い物リスト」は、日々の買い物ややることを気軽にメモできる、シンプルなリストアプリです。</p>
+      <img class="about-panda" src="panda13.png" alt="">
+      <p>「お買い物リスト」は、日々の買い物ややることを気軽にメモできる、シンプルなリストアプリです。</p>
       <p>データはご自身のスマホ・パソコンの中だけに保存され、外部に送信されることはありません。</p>
       <p>大切なリストは「バックアップ」から保存しておくと安心です。</p>
     </div>
