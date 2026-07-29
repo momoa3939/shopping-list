@@ -2,1415 +2,1431 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="theme-color" content="#CFDFDE">
-<title>Fabric Note</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#F6CF68">
+<title>お買い物リスト</title>
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
 <link rel="icon" href="icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700&family=Kosugi+Maru&display=swap" rel="stylesheet">
 <style>
   :root{
-    --accent:#CFDFDE;
-    --accent-dark:#3f5654;
-    --accent-mid:#8fb0ad;
-    --bg:#fdfdfc;
-    --card:#ffffff;
-    --border:#e6ebea;
-    --text:#3f5654;
-    --text-sub:#5c716f;
-    --text-mute:#7f8f8d;
-    --tag-shop-bg:#F6E6A6;
-    --tag-shop-text:#7a6a2f;
-    --tag-home-bg:#CFC9BE;
-    --tag-home-text:#5f5a4e;
-    --warn:#c7a077;
-    --danger:#c07d6d;
+    --bg:#FFFDF9;
+    --surface:#FFFFFF;
+    --text:#6B5646;
+    --muted:#9C8874;
+    --rose:#F6CF68;
+    --rose-dark:#DDAE3F;
+    --star:#E8BC5A;
+    --star-off:var(--delete-muted);
+    --delete-muted:#BBA99A;
+    --danger-text:#B8747C;
+    --danger-bg:#F6E6E4;
+    --danger-border:#E9C9C7;
+    --divider:#EFE4D5;
+    --card-border: 1px solid var(--divider);
   }
-  *{box-sizing:border-box;}
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0; padding:0; height:100%;}
   body{
-    margin:0;
-    font-family:"Hiragino Sans","Meiryo",sans-serif;
-    font-size:15px;
     background:var(--bg);
     color:var(--text);
-    -webkit-tap-highlight-color:transparent;
-    padding-bottom:24px;
+    font-family:'Kosugi Maru','Hiragino Sans',sans-serif;
+    overscroll-behavior-y:none;
   }
-  #topbar{
-    position:sticky; top:0; z-index:20;
-    display:flex; align-items:center; justify-content:space-between;
-    background:#fff; border-bottom:1px solid var(--border);
-    padding:12px 14px;
-  }
-  #topbar .title{font-weight:600; font-size:17px; line-height:1.4; font-family:"Hiragino Sans","Meiryo",sans-serif;}
-  .brand-font{ font-family:"Zen Maru Gothic",sans-serif; font-weight:700; letter-spacing:0; }
-  #topbar .title.brand-font{ font-family:"Zen Maru Gothic",sans-serif; font-weight:700; font-size:22px; }
-  .icon-btn{
-    background:none; border:none; font-size:20px; color:var(--accent-dark);
-    padding:4px 8px; cursor:pointer; line-height:1;
-  }
-  #filterbar{
-    display:flex; gap:6px; overflow-x:auto; padding:10px 14px;
+  #app{
+    max-width:480px;
+    margin:0 auto;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
     background:var(--bg);
-    scrollbar-width:none; -ms-overflow-style:none;
+    position:relative;
   }
-  #filterbar::-webkit-scrollbar{ display:none; }
-  .chip{
-    font-size:14px; padding:6px 12px; border-radius:8px; white-space:nowrap;
-    border:1px solid var(--border); color:var(--text-sub); background:#fff;
-    cursor:pointer; flex-shrink:0;
+  header.topbar{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:14px 16px;
+    margin:14px 18px 6px;
+    position:sticky;
+    top:14px;
+    background:var(--surface);
+    border-radius:18px;
+    border:var(--card-border);
+    z-index:5;
   }
-  .chip.active{ background:var(--accent); color:#2e4644; border-color:var(--accent);}
-  #tagfilterbar{ display:flex; gap:6px; padding:0 14px 10px; }
-  #list{ padding:0 14px; }
-  body.view-history #list{ padding-top:12px; }
+  header.topbar h1{
+    font-family:'Zen Maru Gothic', sans-serif;
+    font-weight:700;
+    font-size:20px;
+    margin:0;
+    flex:1;
+    display:flex;
+    align-items:center;
+    gap:6px;
+  }
+  .title-icon{
+    display:inline-flex;
+    color:var(--rose);
+    flex-shrink:0;
+  }
+  .title-icon svg{ width:26px; height:26px; }
+  .iconbtn{
+    width:38px; height:38px;
+    border-radius:50%;
+    border:none;
+    background:transparent;
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer;
+    color:var(--text);
+    flex-shrink:0;
+    position:relative;
+  }
+  .iconbtn svg{width:19px; height:19px;}
+  .iconbtn.back-btn svg{width:23px; height:23px;}
+  main{ flex:1; padding:4px 18px 100px; }
+  main.with-hero{ padding-bottom:16px; }
 
-  /* guide / about pages (item e) */
-  .info-page{ padding:8px 20px 28px; }
-  .info-hero{ display:flex; flex-direction:column; align-items:center; text-align:center; padding:20px 10px 8px; }
-  .info-hero img{ width:110px; height:110px; object-fit:contain; margin-bottom:10px; }
-  .info-hero .info-lead{ font-size:14px; color:var(--text-sub); max-width:280px; margin:0 0 20px; }
-  .info-brand{ font-size:22px; text-align:center; margin:4px 0 18px; color:var(--text); }
-  .guide-item{ display:flex; gap:12px; padding:16px 0; border-bottom:1px solid var(--border); }
-  .guide-item:last-child{ border-bottom:none; }
-  .guide-num{
-    flex-shrink:0; width:26px; height:26px; border-radius:50%; background:var(--accent);
-    color:#2e4644; font-size:13px; font-weight:600; display:flex; align-items:center; justify-content:center;
-  }
-  .guide-body .guide-title{ font-size:15px; font-weight:600; margin:0 0 4px; }
-  .guide-body p{ font-size:14px; color:var(--text-sub); margin:0 0 4px; line-height:1.6; }
-  .guide-body .guide-tip{ font-size:13px; color:var(--text-mute); margin:6px 0 0; }
-  .about-copy{ font-size:14px; color:var(--text); line-height:1.9; text-align:center; margin:0 0 14px; }
-  .about-copy:last-of-type{ margin-bottom:24px; }
-  .about-intro{ max-width:22em; margin:0 auto 24px; text-align:center; }
-  .about-intro .about-copy{ margin:0 0 16px; }
-  .about-intro .about-copy:last-child{ margin-bottom:0; }
-  .about-divider{ border:none; border-top:1px solid var(--border); margin:20px 0; }
-  .about-section{ margin:0 0 18px; }
-  .about-section .about-heading{ font-size:14px; font-weight:600; margin:0 0 6px; display:flex; align-items:center; gap:6px; }
-  .about-section p{ font-size:13.5px; color:var(--text-sub); line-height:1.8; margin:0; }
-  .about-closing{ text-align:center; font-size:14px; color:var(--text); margin:24px 0 0; }
-  .group-title{ font-size:13px; color:var(--text-mute); margin:14px 0 6px; }
-  .fabric-card{
-    display:flex; gap:12px; background:var(--card); border:1px solid var(--border);
-    border-radius:12px; padding:12px; margin-bottom:10px; cursor:pointer;
-  }
-  .thumb{
-    width:52px; height:52px; border-radius:8px; background:#eef3f2;
-    display:flex; align-items:center; justify-content:center; flex-shrink:0;
+  /* (10) ホーム画面: リスト表示エリアをパンダちゃんの少し上で区切り、
+     その範囲の中だけでスクロールさせる(パンダの領域には絶対に入らない) */
+  body.scroll-lock, html.scroll-lock{
+    height:100dvh;
     overflow:hidden;
   }
-  .thumb img{ width:100%; height:100%; object-fit:cover; }
-  .thumb .ph-icon{ color:var(--text-mute); font-size:20px; }
-  .fabric-info{ flex:1; min-width:0; }
-  .fabric-name{ font-weight:600; font-size:16px; margin:0; }
-  .fabric-sub{ font-size:14px; color:var(--text-sub); margin:2px 0 0; }
-  .bar-bg{ height:4px; background:#eef3f2; border-radius:2px; margin-top:6px; overflow:hidden; }
-  .bar-fill{ height:100%; background:var(--accent-mid); }
-  .tag-badge{
-    display:inline-block; margin-top:6px; font-size:11px; padding:2px 7px;
-    border-radius:5px; margin-right:4px;
+  body.scroll-lock #app{
+    height:100dvh;
+    overflow:hidden;
   }
-  .tag-shop{ background:var(--tag-shop-bg); color:var(--tag-shop-text); }
-  .tag-home{ background:var(--tag-home-bg); color:var(--tag-home-text); }
-  #empty-msg{ text-align:center; color:var(--text-mute); font-size:14px; padding:40px 20px; }
-  .empty-fabric-hero{ display:flex; flex-direction:column; align-items:center; padding:24px 20px 8px; }
-  .empty-fabric-hero img{ width:150px; height:150px; object-fit:contain; margin-bottom:14px; }
-  .empty-fabric-bubble{
-    position:relative; background:#fff; border:1px solid var(--border); border-radius:16px;
-    padding:14px 18px; max-width:260px; text-align:center;
+  .list-scroll-area{
+    overflow-y:auto;
+    overflow-x:hidden;
+    -webkit-overflow-scrolling:touch;
   }
-  .empty-fabric-bubble::before{
-    content:""; position:absolute; top:-8px; left:50%; transform:translateX(-50%) rotate(45deg);
-    width:14px; height:14px; background:#fff; border-left:1px solid var(--border); border-top:1px solid var(--border);
-  }
-  .empty-fabric-bubble .line1{ font-size:15px; color:var(--text); font-weight:600; margin:0 0 4px; }
-  .empty-fabric-bubble .line2{ font-size:13px; color:var(--text-sub); margin:0; }
 
-  /* drawer */
-  #overlay{
-    position:fixed; inset:0; background:rgba(0,0,0,0.3); z-index:30;
-    display:none;
+  /* ---- Home: list of lists ---- */
+  .list-card{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    background:var(--surface);
+    border-radius:18px;
+    padding:16px 16px;
+    margin-bottom:12px;
+    border:var(--card-border);
+    cursor:pointer;
+    touch-action:pan-y;
+    -webkit-user-select:none;
+    user-select:none;
+    -webkit-touch-callout:none;
   }
-  #drawer{
-    position:fixed; top:0; left:0; bottom:0; width:78%; max-width:280px;
-    background:#fff; z-index:31; transform:translateX(-100%);
-    transition:transform 0.25s ease; padding:20px 0; overflow-y:auto;
+  /* (11) 並び替え中のカード */
+  .list-card.dragging{
+    position:absolute;
+    left:0; right:0;
+    z-index:10;
+    box-shadow:0 8px 20px rgba(59,48,38,0.18);
+    opacity:0.97;
+    touch-action:none;
   }
-  #drawer.open{ transform:translateX(0); }
-  #overlay.show{ display:block; }
-  .drawer-item{
-    display:flex; align-items:center; gap:12px; padding:14px 20px;
-    font-size:16px; color:var(--text); cursor:pointer;
+  .list-scroll-area.reordering{
+    position:relative;
   }
-  .drawer-item:active{ background:var(--bg); }
-  .drawer-header{ padding:0 20px 16px; font-weight:600; font-size:16px; border-bottom:1px solid var(--border); margin-bottom:8px; }
+  .list-scroll-area.reordering .list-card:not(.dragging){
+    transition:transform 0.18s ease;
+  }
+  body.dragging-active{
+    -webkit-user-select:none;
+    user-select:none;
+  }
+  /* (11) 並び替えヒント(設定初回ヒントと同じ見た目) */
+  .reorder-panda-hint{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    background:var(--surface);
+    border:1px solid var(--divider);
+    border-radius:14px;
+    padding:12px 14px;
+    margin-bottom:12px;
+    font-size:13.5px;
+    color:var(--muted);
+    line-height:1.5;
+  }
+  .reorder-panda-hint img{
+    width:34px; height:34px;
+    object-fit:contain;
+    flex-shrink:0;
+  }
+  .dot{
+    width:16px; height:16px;
+    border-radius:50%;
+    flex-shrink:0;
+  }
+  .list-card .name{
+    flex:1;
+    font-weight:700;
+    font-size:16px;
+    font-family:'Zen Maru Gothic', sans-serif;
+  }
+  .list-card .count{
+    font-size:15px;
+    color:var(--muted);
+    padding:3px 6px;
+  }
+  .list-edit-btn{
+    width:30px; height:30px;
+    border:none;
+    background:transparent;
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer;
+    flex-shrink:0;
+    color:var(--muted);
+  }
+  .list-edit-btn svg{ width:16px; height:16px; }
+  .fab{
+    position:fixed;
+    left:50%;
+    bottom:24px;
+    transform:translateX(-50%);
+    max-width:480px;
+    width:calc(100% - 36px);
+  }
+  .fab-inner{
+    background:var(--rose);
+    color:var(--text);
+    width:100%;
+    padding:15px;
+    border-radius:16px;
+    font-size:15px;
+    font-weight:700;
+    font-family:'Zen Maru Gothic', sans-serif;
+    border:1px solid var(--rose-dark);
+    display:flex; align-items:center; justify-content:center; gap:8px;
+    cursor:pointer;
+  }
+  .fab-inner svg{
+    width:18px; height:18px;
+    flex-shrink:0;
+  }
+  .empty-hint{
+    text-align:center;
+    color:var(--muted);
+    font-size:14px;
+    margin-top:36px;
+    line-height:1.8;
+  }
+  .empty-hint img{
+    width:150px;
+    height:auto;
+    margin-bottom:8px;
+  }
+  .home-hero-fixed{
+    position:fixed;
+    left:50%;
+    bottom:124px;
+    transform:translateX(-50%);
+    width:100%;
+    max-width:480px;
+    text-align:center;
+    color:var(--muted);
+    font-size:14px;
+    line-height:1.6;
+    pointer-events:none;
+    z-index:4;
+  }
+  .home-hero-fixed img{
+    width:120px;
+    height:120px;
+    object-fit:contain;
+    display:block;
+    margin:0 auto 4px;
+  }
 
-  /* modal / sheet */
-  .sheet-overlay{
-    position:fixed; inset:0; background:rgba(0,0,0,0.35); z-index:40;
-    display:flex; align-items:flex-end; justify-content:center;
+  /* ---- Detail screen ---- */
+  .add-row{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    background:var(--surface);
+    border-radius:16px;
+    padding:6px 8px 6px 16px;
+    border:var(--card-border);
+    margin-bottom:16px;
   }
-  .sheet{
-    background:#fff; width:100%; max-width:480px; border-radius:16px 16px 0 0;
-    max-height:92vh; overflow-y:auto; padding:16px 16px 24px;
+  .add-row input{
+    flex:1;
+    border:none;
+    outline:none;
+    font-size:15px;
+    padding:10px 0;
+    background:transparent;
+    font-family:'Kosugi Maru',sans-serif;
+    color:var(--text);
   }
-  .sheet-title{ font-size:16px; font-weight:600; margin:0 0 12px; display:flex; justify-content:space-between; align-items:center; }
-  label.field-label{ font-size:13px; color:var(--text-sub); display:block; margin:12px 0 4px; }
-  input[type=text], input[type=number], input[type=date], select, textarea{
-    width:100%; padding:9px 10px; border:1px solid var(--border); border-radius:8px;
-    font-size:16px; font-family:inherit; background:#fff; color:var(--text);
+  .add-row input::placeholder{ color:var(--muted); }
+  .add-row button{
+    width:36px; height:36px;
+    border-radius:50%;
+    border:none;
+    background:var(--rose);
+    color:#fff;
+    font-size:20px;
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer;
+    flex-shrink:0;
   }
-  textarea{ resize:vertical; min-height:56px; }
-  input[type=number]{ -moz-appearance:textfield; }
-  input[type=number]::-webkit-outer-spin-button,
-  input[type=number]::-webkit-inner-spin-button{ -webkit-appearance:none; margin:0; }
-  .tag-select{ display:flex; gap:8px; flex-wrap:wrap; margin-top:4px; }
-  .tag-option{
-    padding:6px 12px; border-radius:8px; border:1px solid var(--border);
-    font-size:14px; color:var(--text-sub); cursor:pointer;
+
+  .fav-section{
+    margin-top:22px;
+    margin-bottom:10px;
   }
-  .tag-option.selected{ background:var(--accent); border-color:var(--accent); color:#2e4644; }
-  .photo-row{ display:flex; gap:8px; margin-top:6px; }
-  .photo-slot{
-    width:72px; height:72px; border-radius:8px; border:1px dashed var(--border);
-    display:flex; align-items:center; justify-content:center; position:relative;
-    overflow:hidden; background:#faf9f7; flex-shrink:0;
+  .fav-label{
+    font-size:12px;
+    color:var(--muted);
+    margin:0 0 8px 4px;
+    display:flex; align-items:center; gap:4px;
   }
-  .photo-slot img{ width:100%; height:100%; object-fit:cover; }
-  .photo-slot .remove-x{
-    position:absolute; top:2px; right:2px; background:rgba(0,0,0,0.5); color:#fff;
-    border-radius:50%; width:18px; height:18px; font-size:12px; display:flex;
-    align-items:center; justify-content:center;
+  .fav-scroll{
+    display:flex;
+    gap:8px;
+    overflow-x:auto;
+    padding-bottom:4px;
+    scrollbar-width:none;
+  }
+  .fav-scroll::-webkit-scrollbar{ display:none; }
+  .fav-chip{
+    flex-shrink:0;
+    background:#fff;
+    border:1px solid var(--divider);
+    color:var(--text);
+    padding:8px 14px;
+    border-radius:20px;
+    font-size:13px;
+    display:flex; align-items:center; gap:4px;
+    cursor:pointer;
+    white-space:nowrap;
+  }
+  .fav-chip.added{
+    color:var(--muted);
+    border-color:var(--divider);
+    opacity:1;
+  }
+
+  .item-row{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    background:var(--surface);
+    border-radius:16px;
+    padding:14px 14px;
+    margin-bottom:8px;
+    border:var(--card-border);
+  }
+  .check{
+    width:24px; height:24px;
+    border-radius:50%;
+    border:2px solid var(--rose);
+    flex-shrink:0;
+    cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    background:transparent;
+  }
+  .check.done{
+    background:var(--rose);
+    border-color:var(--rose);
+  }
+  .check svg{ width:13px; height:13px; opacity:0; }
+  .check.done svg{ opacity:1; }
+  .item-text{
+    flex:1;
+    font-size:15px;
+    word-break:break-all;
+  }
+  .item-row.done .item-text{
+    color:var(--muted);
+    text-decoration:line-through;
+  }
+  .starbtn, .trashbtn{
+    width:28px; height:28px;
+    border:none;
+    background:transparent;
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer;
+    flex-shrink:0;
+    color:var(--star-off);
+  }
+  .starbtn.on{ color:var(--star); }
+  .starbtn svg, .trashbtn svg{ width:19px; height:19px; }
+  .trashbtn{ color:var(--delete-muted); }
+
+  .done-toggle{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    color:var(--muted);
+    font-size:13px;
+    padding:12px 4px;
+    cursor:pointer;
+  }
+  .done-toggle svg{
+    width:12px; height:12px;
+    transition:transform 0.2s;
+  }
+  .done-toggle.open svg{ transform:rotate(90deg); }
+  .clear-done{
+    text-align:right;
+    font-size:12px;
+    color:var(--delete-muted);
+    margin:4px 4px 10px;
+    cursor:pointer;
+  }
+
+  /* ---- History ---- */
+  .history-date{
+    font-size:13px;
+    color:var(--muted);
+    margin:18px 4px 8px;
+  }
+  .history-item{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    background:var(--surface);
+    border-radius:16px;
+    padding:14px 14px;
+    margin-bottom:8px;
+    border:var(--card-border);
+  }
+  .history-check{
+    width:24px; height:24px;
+    border-radius:50%;
+    flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .history-check svg{ width:13px; height:13px; }
+  .history-body{ flex:1; }
+  .history-text{
+    font-size:15px;
+    color:var(--muted);
+    text-decoration:line-through;
+  }
+  .history-list{
+    font-size:12px;
+    color:var(--muted);
+    display:flex; align-items:center; gap:5px;
+    margin-top:3px;
+  }
+  .history-list .dot{
+    width:8px; height:8px;
+  }
+  .history-delete-btn{
+    width:28px; height:28px;
+    border:none;
+    background:transparent;
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer;
+    flex-shrink:0;
+    color:var(--delete-muted);
+  }
+  .history-delete-btn svg{ width:17px; height:17px; }
+
+  /* ---- Modal ---- */
+  .modal-backdrop{
+    position:fixed; inset:0;
+    background:rgba(58,53,50,0.35);
+    display:flex; align-items:flex-end;
+    z-index:20;
+  }
+  .modal-backdrop.hidden{ display:none; }
+  .modal-sheet{
+    background:var(--surface);
+    width:100%;
+    max-width:480px;
+    margin:0 auto;
+    border-radius:22px 22px 0 0;
+    padding:22px 20px 28px;
+    max-height:82vh;
+    overflow-y:auto;
+  }
+  .modal-sheet h2{
+    font-family:'Zen Maru Gothic', sans-serif;
+    font-size:17px;
+    margin:0 0 16px;
+  }
+  .modal-sheet input[type=text]{
+    width:100%;
+    padding:13px 14px;
+    border-radius:12px;
+    border:1px solid var(--divider);
+    font-size:15px;
+    margin-bottom:16px;
+    font-family:'Kosugi Maru',sans-serif;
+    color:var(--text);
+    outline:none;
+  }
+  .help-content{
+    font-size:14.5px;
+    line-height:1.7;
+    color:var(--text);
+  }
+  .help-content p{
+    margin:0 0 14px;
+  }
+  .help-content h3{
+    font-family:'Zen Maru Gothic', sans-serif;
+    font-size:16px;
+    margin:28px 0 12px;
+    padding-top:18px;
+    border-top:1px solid var(--divider);
+  }
+  .help-content .help-subhead{
+    font-weight:700;
+    margin-bottom:6px;
+  }
+  .help-content .help-note{
+    font-size:13px;
+    color:var(--muted);
+  }
+  .color-row{
+    display:flex; gap:10px; margin-bottom:22px; flex-wrap:wrap;
+  }
+  .color-swatch{
+    width:30px; height:30px;
+    border-radius:50%;
+    cursor:pointer;
+    border:3px solid transparent;
+  }
+  .color-swatch.selected{
+    border-color:var(--text);
+  }
+  .color-swatch.disabled{
+    opacity:0.25;
+    cursor:not-allowed;
+    filter:grayscale(60%);
+  }
+  .modal-actions{
+    display:flex; gap:10px;
   }
   .btn{
-    width:100%; padding:12px; border-radius:10px; border:none; font-size:15px;
-    font-weight:600; cursor:pointer; margin-top:16px;
+    flex:1;
+    padding:13px;
+    border-radius:12px;
+    background:var(--bg);
+    color:var(--text);
+    border:1px solid var(--muted);
+    font-size:14px;
+    font-weight:700;
+    font-family:'Zen Maru Gothic', sans-serif;
+    cursor:pointer;
+    transition:background 0.15s, color 0.15s, border-color 0.15s;
   }
-  .btn-primary{ background:var(--accent-dark); color:#fff; }
-  .btn-secondary{ background:#fff; border:1px solid var(--border); color:var(--text); }
-  .btn-danger-outline{ background:#fff; border:1px solid var(--danger); color:var(--danger); }
-  .row-actions{ display:flex; align-items:center; gap:12px; flex-shrink:0; }
-  .row-icon{ display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--text-mute); }
-  .row-icon:hover{ color:var(--text-sub); }
-  .row-icon.disabled{ opacity:0.25; pointer-events:none; }
-  .row-icon.danger{ color:var(--danger); font-size:14px; }
-  .row-icon svg{ display:block; }
+  .btn:hover, .btn:active{
+    background:var(--rose);
+    color:var(--text);
+    border-color:var(--rose);
+  }
 
-  /* detail */
-  .detail-photos{ display:flex; gap:8px; overflow-x:auto; margin-bottom:12px; }
-  .detail-photos img{ width:96px; height:96px; border-radius:10px; object-fit:cover; flex-shrink:0; cursor:pointer; }
-  #photo-lightbox{
-    position:fixed; inset:0; background:rgba(0,0,0,0.82); z-index:60;
-    display:none; align-items:center; justify-content:center; padding:24px;
+  /* ---- 設定ボタンの初回バッジ ---- */
+  .gear-badge{
+    position:absolute;
+    top:2px; right:2px;
+    width:9px; height:9px;
+    border-radius:50%;
+    background:var(--danger-text);
+    border:2px solid var(--bg);
+    pointer-events:none;
   }
-  #photo-lightbox.show{ display:flex; }
-  #photo-lightbox img{ max-width:100%; max-height:100%; border-radius:8px; object-fit:contain; }
-  #photo-lightbox .lightbox-close{
-    position:absolute; top:16px; right:18px; color:#fff; font-size:26px;
-    background:none; border:none; cursor:pointer; line-height:1;
+
+  /* ---- 設定メニュー ---- */
+  .settings-menu{
+    display:flex;
+    flex-direction:column;
   }
-  .detail-row{ display:flex; justify-content:space-between; font-size:15px; padding:7px 0; border-bottom:1px solid var(--border); }
-  .detail-row:last-child{ border-bottom:none; }
-  #material-list .detail-row, #tag-list .detail-row{ font-size:16px; }
-  .detail-row .k{ color:var(--text-sub); }
-  .history-item{ display:flex; justify-content:space-between; font-size:15px; padding:8px 0; border-bottom:1px solid var(--border); }
-  .history-item:last-child{ border-bottom:none; }
-  .history-sub{ color:var(--text-sub); font-size:12px; }
-  .section-title{ font-size:14px; font-weight:600; margin:16px 0 6px; color:var(--text); }
-  #toast{
-    position:fixed; bottom:24px; left:50%; transform:translateX(-50%);
-    background:var(--accent-dark); color:#fff; padding:10px 18px; border-radius:20px;
-    font-size:14px; z-index:60; display:none;
+  .settings-item{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    background:transparent;
+    border:none;
+    text-align:left;
+    padding:14px 4px;
+    font-size:15px;
+    font-family:'Kosugi Maru',sans-serif;
+    color:var(--text);
+    cursor:pointer;
+  }
+  .settings-item .settings-icon{
+    font-size:17px;
+    width:22px;
+    flex-shrink:0;
+    text-align:center;
+  }
+  .settings-divider{
+    height:1px;
+    background:var(--divider);
+    margin:4px 0;
+    border:none;
+  }
+
+  /* ---- 設定初回のパンダヒント ---- */
+  .settings-panda-hint{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    background:var(--bg);
+    border:1px solid var(--divider);
+    border-radius:14px;
+    padding:12px 14px;
+    margin-bottom:14px;
+    font-size:13.5px;
+    color:var(--muted);
+    line-height:1.5;
+  }
+  .settings-panda-hint img{
+    width:34px; height:34px;
+    object-fit:contain;
+    flex-shrink:0;
+  }
+
+  /* (8) help-panda-tip: 見た目を通常の<p>と統一するため装飾は付けない */
+
+  /* (7) 「このアプリについて」モーダル内のパンダ画像 */
+  .about-panda{
+    display:block;
+    width:48px;
+    height:48px;
+    object-fit:contain;
+    margin:0 auto 14px;
+  }
+
+  /* (9) リスト詳細画面 下部の見守りパンダ */
+  .detail-watch-panda{
+    display:flex;
+    justify-content:center;
+    margin:16px 0 4px;
+    opacity:0.85;
+  }
+  .detail-watch-panda img{
+    width:36px;
+    height:auto;
+    display:block;
   }
 </style>
 </head>
 <body>
+<div id="app">
 
-<div id="topbar">
-  <button class="icon-btn" id="btn-menu" aria-label="メニュー">☰</button>
-  <span class="title" id="page-title">Fabric Note</span>
-  <span style="display:flex; align-items:center; gap:2px;">
-    <button class="icon-btn" id="btn-sort" aria-label="並び替え">↕</button>
-    <button class="icon-btn" id="btn-add" aria-label="追加">＋</button>
-  </span>
-</div>
+  <header class="topbar" id="topbar"></header>
+  <main id="main"></main>
 
-<div id="filterbar"></div>
-<div id="tagfilterbar"></div>
-<div id="list"></div>
-<div id="empty-msg" style="display:none;">まだ生地が登録されていません。右上の＋から追加してね。</div>
+  <div class="home-hero-fixed" id="homeHeroFixed" style="display:none;">
+    <img src="panda13.png" alt="">
+    今日は何をメモしよっか？
+  </div>
 
-<div id="overlay"></div>
-<div id="drawer">
-  <div class="drawer-header">メニュー</div>
-  <div class="drawer-item" data-nav="home">📋 生地一覧</div>
-  <div class="drawer-item" data-nav="history">🕘 使った履歴</div>
-  <div class="drawer-item" data-nav="settings">⚙️ 設定</div>
-  <div class="drawer-item" data-nav="guide">📖 使い方</div>
-  <div class="drawer-item" data-nav="about">ℹ️ このアプリについて</div>
-</div>
+  <div class="fab" id="fab" style="display:none;">
+    <button class="fab-inner" id="fabBtn"></button>
+  </div>
 
-<div id="toast"></div>
-<div id="photo-lightbox">
-  <button class="lightbox-close" id="lightbox-close" aria-label="閉じる">✕</button>
-  <img id="lightbox-img" src="" alt="">
+  <div class="modal-backdrop hidden" id="modalBackdrop">
+    <div class="modal-sheet" id="modalSheet"></div>
+  </div>
+
 </div>
 
 <script>
-const STORAGE_KEY = "fabricStockData";
-const DEFAULT_MATERIALS = ["布帛","ミニ裏毛","裏毛","天竺","スムース"];
-const DEFAULT_TAGS = ["ショップ用","自宅用"];
-
-function loadData(){
-  try{
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if(raw) return JSON.parse(raw);
-  }catch(e){}
-  return { fabrics: [], usageHistory: [], materials: [...DEFAULT_MATERIALS], tags: [...DEFAULT_TAGS] };
-}
-function saveData(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
-
-/* ---------- 購入先オートコンプリート履歴(生地データとは別キーで管理) ---------- */
-const SHOP_HISTORY_KEY = "fabricStockShopHistory";
-function loadShopHistory(){
-  try{
-    const raw = localStorage.getItem(SHOP_HISTORY_KEY);
-    if(raw) return JSON.parse(raw);
-  }catch(e){}
-  return [];
-}
-function saveShopHistory(list){ localStorage.setItem(SHOP_HISTORY_KEY, JSON.stringify(list)); }
-function addShopToHistory(name){
-  if(!name) return;
-  let list = loadShopHistory().filter(s => s !== name);
-  list.unshift(name);
-  if(list.length > 30) list = list.slice(0, 30);
-  saveShopHistory(list);
-}
-function removeShopFromHistory(name){
-  const list = loadShopHistory().filter(s => s !== name);
-  saveShopHistory(list);
-}
-
-const NATURE_PALETTE = ["#CFDFDE","#F4E9EA","#E2C5C8","#D6C6E0","#C8DDBA","#F6E6A6","#CFC9BE","#BFD6E8"];
-const NATURE_PALETTE_TEXT = {
-  "#CFDFDE":"#3f5654", "#F4E9EA":"#8a6f72", "#E2C5C8":"#7a4f52", "#D6C6E0":"#5f4a6b",
-  "#C8DDBA":"#4f6b41", "#F6E6A6":"#7a6a2f", "#CFC9BE":"#5f5a4e", "#BFD6E8":"#3f5a6b"
-};
-
-let state = loadData();
-if(!state.materials) state.materials = [...DEFAULT_MATERIALS];
-if(!state.tags) state.tags = [...DEFAULT_TAGS];
-if(!state.tagColors) state.tagColors = {};
-state.tags.forEach((t,i)=>{
-  if(!state.tagColors[t]){
-    if(t === "ショップ用") state.tagColors[t] = "#F6E6A6";
-    else if(t === "自宅用") state.tagColors[t] = "#CFC9BE";
-    else state.tagColors[t] = NATURE_PALETTE[i % NATURE_PALETTE.length];
-  }
-});
-function getTagColor(name){ return (state.tagColors && state.tagColors[name]) || NATURE_PALETTE[0]; }
-function getTagTextColor(name){ return NATURE_PALETTE_TEXT[getTagColor(name)] || "#3f5654"; }
-function formatLength(v){
-  if(v === "" || v === null || v === undefined) return "";
-  const n = parseFloat(v);
-  if(isNaN(n)) return "";
-  return n.toFixed(1);
-}
-function adjustRemaining(fabricId, delta){
-  const f = state.fabrics.find(x=>x.id===fabricId);
-  if(!f) return;
-  let remain = (parseFloat(f.remainingLength)||0) + delta;
-  if(remain < 0) remain = 0;
-  f.remainingLength = remain.toFixed(1);
-}
-
-let currentView = "home";
-let activeMaterial = "すべて";
-let activeTag = null;
-let sortMode = "material"; // material | dateDesc | dateAsc | shopAsc | shopDesc
-
-const listEl = document.getElementById("list");
-const filterbarEl = document.getElementById("filterbar");
-const tagfilterbarEl = document.getElementById("tagfilterbar");
-const pageTitleEl = document.getElementById("page-title");
-const emptyMsgEl = document.getElementById("empty-msg");
+/* ====================== データ管理 ====================== */
+const STORAGE_KEY = "yumeListData";
+const PALETTE = ["#A37B68","#C7B299","#B8B2A9","#F6CF68","#F0C9B0","#E6B8BE","#CDBFDD","#BFD6E8","#AEDFD1","#A8BFA5"];
 
 function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
 
-function showToast(msg){
-  const t = document.getElementById("toast");
-  t.textContent = msg;
-  t.style.display = "block";
-  clearTimeout(showToast._timer);
-  showToast._timer = setTimeout(()=>{ t.style.display="none"; }, 1800);
+function loadData(){
+  let data = null;
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw) data = JSON.parse(raw);
+  }catch(e){}
+  if(!data){
+    data = {
+      lists:[
+        { id: uid(), name:"買うもの", color:"#A8BFA5", items:[], favorites:[] },
+        { id: uid(), name:"やること", color:"#E6B8BE", items:[], favorites:[] }
+      ],
+      history:[]
+    };
+  }
+  if(!data.history) data.history = [];
+  return data;
+}
+function saveData(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state.data)); }
+
+/* ---- 初回案内(オンボーディング)フラグ ---- */
+const ONBOARDING_KEY = "shoppingListOnboarding";
+function getOnboarding(){
+  try{
+    const raw = localStorage.getItem(ONBOARDING_KEY);
+    if(raw) return JSON.parse(raw);
+  }catch(e){}
+  return { gearBadgeSeen:false, settingsHintSeen:false, reorderHintSeen:false };
+}
+function setOnboarding(patch){
+  const current = getOnboarding();
+  const updated = Object.assign(current, patch);
+  localStorage.setItem(ONBOARDING_KEY, JSON.stringify(updated));
+}
+function todayStr(){
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 }
 
-/* ---------- drawer ---------- */
-const drawer = document.getElementById("drawer");
-const overlay = document.getElementById("overlay");
-document.getElementById("btn-menu").onclick = ()=>{
-  drawer.classList.add("open"); overlay.classList.add("show");
+const state = {
+  data: loadData(),
+  view: "home",        // "home" | "detail" | "history"
+  currentListId: null
 };
-overlay.onclick = closeDrawer;
-function closeDrawer(){ drawer.classList.remove("open"); overlay.classList.remove("show"); }
-document.querySelectorAll(".drawer-item").forEach(el=>{
-  el.onclick = ()=>{
-    closeDrawer();
-    navigate(el.dataset.nav);
-  };
-});
 
-function navigate(view){
-  currentView = view;
-  activeMaterial = "すべて";
-  activeTag = null;
-  render();
-}
+/* ====================== 完了アイテムの履歴移動 ====================== */
+// (12) チェックしてもすぐには履歴に移動せず、一定時間(猶予)経過後に移動する
+//      うっかりチェックしてもしばらくは元に戻せるようにするための仕様
+const DONE_GRACE_MS = 6 * 60 * 60 * 1000; // 6時間(3時間〜半日の目安の中間値。変更したい場合はここを調整)
 
-/* ---------- top add button ---------- */
-const btnAddEl = document.getElementById("btn-add");
-btnAddEl.onclick = ()=>{
-  if(currentView === "history"){
-    openUsageForm();
-  } else {
-    openFabricForm();
-  }
-};
+function nowISO(){ return new Date().toISOString(); }
 
-/* ---------- sort button ---------- */
-const btnSortEl = document.getElementById("btn-sort");
-btnSortEl.onclick = openSortSheet;
-const SORT_LABELS = {
-  material: "素材別(現在の表示)",
-  dateDesc: "購入日が新しい順",
-  dateAsc: "購入日が古い順",
-  shopAsc: "お店順(あ→ん)",
-  shopDesc: "お店順(ん→あ)"
-};
-function openSortSheet(){
-  const html = `
-    <div class="sheet-title"><span>並び替え</span><span id="close-sheet" style="cursor:pointer; color:var(--text-sub);">✕</span></div>
-    <div id="sort-options">
-      ${Object.keys(SORT_LABELS).map(key=>`
-        <div class="detail-row" data-sort="${key}" style="cursor:pointer;">
-          <span class="k">${SORT_LABELS[key]}</span>
-          <span>${sortMode===key ? "✓" : ""}</span>
-        </div>
-      `).join("")}
-    </div>
-  `;
-  const wrap = openSheet(html);
-  wrap.querySelector("#close-sheet").onclick = ()=> closeSheet(wrap);
-  wrap.querySelectorAll("[data-sort]").forEach(el=>{
-    el.onclick = ()=>{
-      sortMode = el.dataset.sort;
-      closeSheet(wrap);
-      renderHome();
-    };
-  });
-}
-
-/* ---------- render router ---------- */
-function render(){
-  document.body.classList.toggle("view-history", currentView === "history");
-  pageTitleEl.classList.toggle("brand-font", currentView === "home");
-  btnAddEl.style.visibility = (currentView === "guide" || currentView === "about") ? "hidden" : "visible";
-  btnSortEl.style.visibility = (currentView === "home") ? "visible" : "hidden";
-  if(currentView === "home"){
-    pageTitleEl.textContent = "Fabric Note";
-    renderHome();
-  } else if(currentView === "history"){
-    pageTitleEl.textContent = "使った履歴";
-    renderHistory();
-  } else if(currentView === "settings"){
-    pageTitleEl.textContent = "設定";
-    renderSettings();
-  } else if(currentView === "guide"){
-    pageTitleEl.textContent = "使い方";
-    renderGuide();
-  } else if(currentView === "about"){
-    pageTitleEl.textContent = "このアプリについて";
-    renderAbout();
-  }
-}
-
-/* ---------- home ---------- */
-function renderHome(){
-  filterbarEl.style.display = "flex";
-  const mats = ["すべて", ...state.materials];
-  filterbarEl.innerHTML = mats.map(m=>
-    `<span class="chip ${activeMaterial===m?'active':''}" data-mat="${m}">${m}</span>`
-  ).join("");
-  filterbarEl.querySelectorAll(".chip").forEach(c=>{
-    c.onclick = ()=>{ activeMaterial = c.dataset.mat; renderHome(); };
-  });
-
-  tagfilterbarEl.style.display = "flex";
-  tagfilterbarEl.innerHTML = ["すべて", ...state.tags].map(t=>
-    `<span class="chip ${ (activeTag===t || (t==='すべて' && !activeTag)) ?'active':''}" data-tag="${t}">${t}</span>`
-  ).join("");
-  tagfilterbarEl.querySelectorAll(".chip").forEach(c=>{
-    c.onclick = ()=>{ activeTag = c.dataset.tag==="すべて" ? null : c.dataset.tag; renderHome(); };
-  });
-
-  let fabrics = state.fabrics.filter(f=>{
-    const matOk = activeMaterial==="すべて" || f.material===activeMaterial;
-    const tagOk = !activeTag || (f.tags||[]).includes(activeTag);
-    return matOk && tagOk;
-  });
-
-  if(state.fabrics.length===0){
-    listEl.innerHTML = "";
-    emptyMsgEl.innerHTML = `
-      <div class="empty-fabric-hero">
-        <img src="hedgehog-empty.png" alt="">
-        <div class="empty-fabric-bubble">
-          <p class="line1">まだ生地がないみたい</p>
-          <p class="line2">右上の＋から追加してね</p>
-        </div>
-      </div>`;
-    emptyMsgEl.style.display = "block";
-    return;
-  }
-  emptyMsgEl.style.display = "none";
-
-  let html = "";
-  if(sortMode === "material"){
-    // group by material
-    const groups = {};
-    fabrics.forEach(f=>{
-      if(!groups[f.material]) groups[f.material] = [];
-      groups[f.material].push(f);
-    });
-    Object.keys(groups).forEach(mat=>{
-      html += `<div class="group-title">${mat}</div>`;
-      groups[mat].forEach(f=>{ html += renderFabricCard(f); });
-    });
-  } else {
-    const sorted = [...fabrics].sort((a,b)=>{
-      if(sortMode === "dateDesc") return (b.purchaseDate||"").localeCompare(a.purchaseDate||"");
-      if(sortMode === "dateAsc") return (a.purchaseDate||"").localeCompare(b.purchaseDate||"");
-      if(sortMode === "shopAsc") return (a.shop||"").localeCompare(b.shop||"", "ja");
-      if(sortMode === "shopDesc") return (b.shop||"").localeCompare(a.shop||"", "ja");
-      return 0;
-    });
-    sorted.forEach(f=>{ html += renderFabricCard(f); });
-  }
-  listEl.innerHTML = html;
-  listEl.querySelectorAll(".fabric-card").forEach(el=>{
-    el.onclick = ()=> openFabricDetail(el.dataset.id);
-  });
-}
-
-function renderFabricCard(f){
-  const bought = parseFloat(f.boughtLength)||0;
-  const remain = parseFloat(f.remainingLength)||0;
-  const pct = bought>0 ? Math.max(0,Math.min(100, remain/bought*100)) : 0;
-  const barColor = pct < 25 ? "#EBD7D9" : (pct < 50 ? "#F6E6A6" : "#C8DDBA");
-  const thumb = f.photos && f.photos[0]
-    ? `<img src="${f.photos[0]}">`
-    : `<img src="hedgehog-empty.png" alt="">`;
-  const tagsHtml = (f.tags||[]).map(t=>
-    `<span class="tag-badge" style="background:${getTagColor(t)}; color:${getTagTextColor(t)};">${escapeHtml(t)}</span>`
-  ).join("");
-  return `
-    <div class="fabric-card" data-id="${f.id}">
-      <div class="thumb">${thumb}</div>
-      <div class="fabric-info">
-        <p class="fabric-name">${escapeHtml(f.name)}</p>
-        <p class="fabric-sub">残り${formatLength(remain)}m / 購入時${formatLength(bought)}m</p>
-        <div class="bar-bg"><div class="bar-fill" style="width:${pct}%; background:${barColor};"></div></div>
-        <div>${tagsHtml}</div>
-      </div>
-    </div>`;
-}
-
-function moveItem(arr, idx, dir){
-  const newIdx = idx + dir;
-  if(newIdx < 0 || newIdx >= arr.length) return;
-  const tmp = arr[idx];
-  arr[idx] = arr[newIdx];
-  arr[newIdx] = tmp;
-}
-function iconPencil(){
-  return `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>`;
-}
-function iconUp(){
-  return `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15l-6-6-6 6"/></svg>`;
-}
-function iconDown(){
-  return `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>`;
-}
-
-function escapeHtml(s){
-  const d = document.createElement("div");
-  d.textContent = s || "";
-  return d.innerHTML;
-}
-
-/* ---------- history view ---------- */
-function renderHistory(){
-  filterbarEl.style.display = "none";
-  tagfilterbarEl.style.display = "none";
-  filterbarEl.innerHTML = "";
-  tagfilterbarEl.innerHTML = "";
-
-  if(state.usageHistory.length===0){
-    listEl.innerHTML = "";
-    emptyMsgEl.style.display = "block";
-    emptyMsgEl.textContent = "まだ使った履歴がありません。";
-    return;
-  }
-  emptyMsgEl.style.display = "none";
-
-  const sorted = [...state.usageHistory].sort((a,b)=> b.date.localeCompare(a.date));
-  listEl.innerHTML = sorted.map(h=>{
-    const f = state.fabrics.find(x=>x.id===h.fabricId);
-    const fname = f ? f.name : "(削除済みの生地)";
-    return `
-      <div class="fabric-card" style="cursor:default;">
-        <div class="fabric-info">
-          <p class="fabric-name">${escapeHtml(h.itemName)}</p>
-          <p class="fabric-sub">${escapeHtml(fname)} ・ ${h.usedLength}m ・ ${h.date}</p>
-          ${h.memo ? `<p class="fabric-sub" style="color:var(--text-mute); font-size:12.5px; margin-top:4px;">📝 ${escapeHtml(h.memo)}</p>` : ""}
-        </div>
-        <span class="row-actions">
-          <span class="row-icon" data-hedit="${h.id}">${iconPencil()}</span>
-          <span class="row-icon danger" data-hdel="${h.id}">✕</span>
-        </span>
-      </div>`;
-  }).join("");
-  listEl.querySelectorAll("[data-hedit]").forEach(el=>{
-    el.onclick = ()=> openUsageForm(null, el.dataset.hedit);
-  });
-  listEl.querySelectorAll("[data-hdel]").forEach(el=>{
-    el.onclick = ()=>{
-      if(!confirm("この使った履歴を削除します。よろしいですか?")) return;
-      const h = state.usageHistory.find(x=>x.id===el.dataset.hdel);
-      if(h) adjustRemaining(h.fabricId, parseFloat(h.usedLength)||0);
-      state.usageHistory = state.usageHistory.filter(x=>x.id!==el.dataset.hdel);
-      saveData();
-      showToast("削除しました");
-      renderHistory();
-    };
-  });
-}
-
-/* ---------- guide view (使い方) ---------- */
-function renderGuide(){
-  filterbarEl.style.display = "none";
-  tagfilterbarEl.style.display = "none";
-  filterbarEl.innerHTML = "";
-  tagfilterbarEl.innerHTML = "";
-  emptyMsgEl.style.display = "none";
-
-  const items = [
-    { title:"生地を登録する", tip:"📷 写真は自動で軽量化されるので、スマホの容量を気にせず登録できます。",
-      body:["右上の「＋」から新しい生地を登録できます。","写真・素材・用途・長さ・購入情報などを入力して、お気に入りの生地を記録しましょう。"] },
-    { title:"一覧から探す", tip:null,
-      body:["登録した生地は一覧で確認できます。","素材やタグで絞り込めるので、探したい生地もすぐに見つかります。","上部のチップをタップして切り替えてください。"] },
-    { title:"使った履歴を記録する", tip:null,
-      body:["生地を使ったら「使った履歴」を記録しましょう。","使った長さに合わせて、残りのメートル数が自動で更新されます。","在庫管理がぐっと楽になります。"] },
-    { title:"素材・タグを管理する", tip:null,
-      body:["設定画面から素材や用途タグの追加・編集ができます。","よく使う分類を登録しておくと、生地を探しやすくなります。"] },
-    { title:"バックアップを取る", tip:null,
-      body:["設定画面の「データのバックアップ」から、登録データを保存できます。","機種変更や万が一に備えて、定期的なバックアップをおすすめします。"] },
-    { title:"うまく動かないときは", tip:null,
-      body:["表示がおかしいときやエラーが発生したときは、設定画面の「アプリの調子が悪いとき」をご確認ください。","多くのトラブルは、この画面から改善できます。"] }
-  ];
-
-  listEl.innerHTML = `
-    <div class="info-page">
-      <div class="info-hero">
-        <img src="hedgehog-fabric.png" alt="">
-        <p class="info-lead">初めてでも大丈夫。<br>Fabric Noteの基本的な<br>使い方をご紹介します。</p>
-      </div>
-      ${items.map((it,i)=>`
-        <div class="guide-item">
-          <div class="guide-num">${i+1}</div>
-          <div class="guide-body">
-            <p class="guide-title">${escapeHtml(it.title)}</p>
-            ${it.body.map(line=>`<p>${escapeHtml(line)}</p>`).join("")}
-            ${it.tip ? `<p class="guide-tip">${escapeHtml(it.tip)}</p>` : ""}
-          </div>
-        </div>`).join("")}
-    </div>`;
-}
-
-/* ---------- about view (このアプリについて) ---------- */
-function renderAbout(){
-  filterbarEl.style.display = "none";
-  tagfilterbarEl.style.display = "none";
-  filterbarEl.innerHTML = "";
-  tagfilterbarEl.innerHTML = "";
-  emptyMsgEl.style.display = "none";
-
-  listEl.innerHTML = `
-    <div class="info-page">
-      <div class="info-hero">
-        <img src="hedgehog-fabric.png" alt="">
-      </div>
-      <p class="info-brand brand-font">Fabric Note</p>
-      <div class="about-intro">
-        <p class="about-copy">お気に入りの生地を<br>いつでも手のひらに。</p>
-        <p class="about-copy">使いたい生地も<br>買ったばかりの生地も<br>大切に残しておきたい生地も。</p>
-        <p class="about-copy">Fabric Noteは<br>そんな毎日に寄り添うアプリです。</p>
-        <p class="about-closing" style="margin-bottom:20px;">🦔「大切な生地、一緒に見守るよ」</p>
-      </div>
-
-
-      <div class="about-section" style="margin-top:24px;">
-        <p class="about-heading">🔒 データについて</p>
-        <p>Fabric Noteに登録したデータは、すべてお使いの端末内だけに保存されます。外部サーバーへ送信されたり、共有されたりすることはありません。安心してご利用ください。</p>
-      </div>
-
-      <hr class="about-divider">
-
-      <div class="about-section">
-        <p class="about-heading">💾 バックアップについて</p>
-        <p>Fabric Noteの記録は、お使いの端末の中だけにそっとしまわれています。機種変更やブラウザのお引っ越しがあると、大切な記録が一緒についてきてくれないことも。</p>
-        <p style="margin-top:12px;">いつもそばにいてほしい記録は、設定画面の「データのバックアップ」から、ときどき保存しておくと安心です。保存したファイルは、iCloud・Googleドライブ・OneDrive・メールなど、ご自身の使いやすい場所に置いておいてくださいね。</p>
-        <p class="about-closing" style="margin-top:12px;">🦔「わたしも一緒に、大事に運ぶよ」</p>
-      </div>
-
-      <hr class="about-divider">
-
-      <div class="about-section">
-        <p class="about-heading">📱 パソコンとスマホについて</p>
-        <p>スマホとパソコン、それぞれのFabric Noteは、まだお互いのことを知りません。自動では記録がつながらないので、同じ記録を両方で見たいときは、「バックアップ保存」と「復元」で手をつないであげてください。</p>
-        <p style="margin-top:12px;">⚠️ 復元をすると、今の記録はバックアップの内容に置き換わります。今の記録とバックアップを合体させることはできないので、その点だけ気をつけてくださいね。</p>
-        <p class="about-closing" style="margin-top:12px;">🦔「時々でいいから、バックアップを持たせてあげてね」</p>
-      </div>
-
-      <hr class="about-divider">
-
-      <div class="about-section">
-        <p class="about-heading">🏠 ホーム画面に追加する方法</p>
-        <p>よく使ってくださる方は、ホーム画面に置いてあげると、いつでもワンタップで会いに来られます。</p>
-        <p style="margin-top:12px;"><strong>〈iPhoneの場合〉</strong><br>① Safariでこのページを開く<br>② 下の「共有」ボタン(四角に上矢印のアイコン)をタップ<br>③ 「ホーム画面に追加」を選択<br>④ 右上の「追加」をタップして完了</p>
-        <p style="margin-top:12px;"><strong>〈Androidの場合〉</strong><br>① Chromeでこのページを開く<br>② 右上の「⋮」(縦三点リーダー)をタップ<br>③ 「ホーム画面に追加」または「アプリをインストール」を選択</p>
-        <p style="margin-top:12px;">※ iPhoneはSafari、AndroidはChromeでないと、うまく出てこないことがあります。</p>
-        <p class="about-closing" style="margin-top:12px;">🦔「ホーム画面で待ってるね」</p>
-      </div>
-
-    </div>`;
-}
-
-/* ---------- settings view ---------- */
-function renderSettings(){
-  filterbarEl.style.display = "none";
-  tagfilterbarEl.style.display = "none";
-  filterbarEl.innerHTML = "";
-  tagfilterbarEl.innerHTML = "";
-  emptyMsgEl.style.display = "none";
-
-  listEl.innerHTML = `
-    <div style="padding:16px 0;">
-      <div class="section-title">素材の管理</div>
-      <div id="material-list"></div>
-      <div style="display:flex; gap:8px; margin-top:8px;">
-        <input type="text" id="new-material" placeholder="新しい素材名">
-        <button class="icon-btn" id="add-material" style="border:1px solid var(--border); border-radius:8px;">＋</button>
-      </div>
-
-      <div class="section-title" style="margin-top:24px;">用途タグの管理</div>
-      <div id="tag-list"></div>
-      <button class="btn btn-secondary" id="add-tag" style="margin-top:8px;">＋ 新しいタグを追加</button>
-
-      <div class="section-title" style="margin-top:24px;">データのバックアップ</div>
-      <div style="display:flex; gap:10px; margin-top:8px;">
-        <button class="btn btn-secondary" id="btn-export" style="margin-top:0; display:flex; flex-direction:column; align-items:center; gap:4px; padding:14px 8px;"><span style="font-size:22px;">📦</span><span>バックアップ保存</span></button>
-        <button class="btn btn-secondary" id="btn-import" style="margin-top:0; display:flex; flex-direction:column; align-items:center; gap:4px; padding:14px 8px;"><span style="font-size:22px;">🔄</span><span>復元する</span></button>
-      </div>
-      <input type="file" id="file-import" accept="application/json" style="display:none;">
-
-      <div class="section-title" style="margin-top:24px;">生地一覧をExcelで書き出す</div>
-      <p style="font-size:12px; color:var(--text-mute); margin:0 0 8px;">
-        今登録されている生地の一覧を、WPS OfficeやExcelでそのまま開けるファイルとして保存します。
-      </p>
-      <button class="btn btn-secondary" id="btn-export-xlsx">生地一覧をExcelで書き出す</button>
-
-      <div class="section-title" style="margin-top:24px;">アプリの調子が悪いとき</div>
-      <p style="font-size:12px; color:var(--text-mute); margin:0 0 8px;">
-        表示がおかしい・更新されないなどの不具合がある時にお試しください。
-        アプリの表示データ(キャッシュ)だけをリセットします。生地の登録データが消えることはありません。
-      </p>
-      <button class="btn btn-secondary" id="btn-cache-reset">表示データをリセットする</button>
-    </div>
-  `;
-
-  document.getElementById("btn-export").onclick = exportBackup;
-  document.getElementById("btn-import").onclick = ()=> document.getElementById("file-import").click();
-  document.getElementById("file-import").onchange = importBackup;
-  document.getElementById("btn-export-xlsx").onclick = exportXlsx;
-  document.getElementById("btn-cache-reset").onclick = resetAppCache;
-
-  const matListEl = document.getElementById("material-list");
-  matListEl.innerHTML = state.materials.map((m, idx)=>`
-    <div class="detail-row">
-      <span class="k">${escapeHtml(m)}</span>
-      <span class="row-actions">
-        <span class="row-icon ${idx===0?'disabled':''}" data-mup="${idx}">${iconUp()}</span>
-        <span class="row-icon ${idx===state.materials.length-1?'disabled':''}" data-mdown="${idx}">${iconDown()}</span>
-        <span class="row-icon" data-medit="${idx}">${iconPencil()}</span>
-        <span class="row-icon danger" data-mdel="${idx}">✕</span>
-      </span>
-    </div>`
-  ).join("");
-  matListEl.querySelectorAll("[data-mup]").forEach(el=>{
-    el.onclick = ()=>{ moveItem(state.materials, parseInt(el.dataset.mup), -1); saveData(); renderSettings(); };
-  });
-  matListEl.querySelectorAll("[data-mdown]").forEach(el=>{
-    el.onclick = ()=>{ moveItem(state.materials, parseInt(el.dataset.mdown), 1); saveData(); renderSettings(); };
-  });
-  matListEl.querySelectorAll("[data-medit]").forEach(el=>{
-    el.onclick = ()=>{
-      const idx = parseInt(el.dataset.medit);
-      const oldName = state.materials[idx];
-      const next = prompt("素材名を編集", oldName);
-      if(next===null) return;
-      const trimmed = next.trim();
-      if(!trimmed) return;
-      if(trimmed!==oldName && state.materials.includes(trimmed)){ alert("同じ名前の素材がすでにあります"); return; }
-      state.materials[idx] = trimmed;
-      state.fabrics.forEach(f=>{ if(f.material===oldName) f.material = trimmed; });
-      saveData(); renderSettings();
-    };
-  });
-  matListEl.querySelectorAll("[data-mdel]").forEach(el=>{
-    el.onclick = ()=>{
-      const idx = parseInt(el.dataset.mdel);
-      const name = state.materials[idx];
-      if(!confirm(`「${name}」を削除します。よろしいですか?`)) return;
-      state.materials.splice(idx,1);
-      saveData(); renderSettings();
-    };
-  });
-  document.getElementById("add-material").onclick = ()=>{
-    const v = document.getElementById("new-material").value.trim();
-    if(v && !state.materials.includes(v)){
-      state.materials.push(v); saveData(); renderSettings();
-    }
-  };
-
-  const tagListEl = document.getElementById("tag-list");
-  tagListEl.innerHTML = state.tags.map((t, idx)=>`
-    <div class="detail-row">
-      <span class="k" style="display:flex; align-items:center; gap:8px;">
-        <span style="width:14px; height:14px; border-radius:50%; background:${getTagColor(t)}; display:inline-block; flex-shrink:0;"></span>
-        ${escapeHtml(t)}
-      </span>
-      <span class="row-actions">
-        <span class="row-icon ${idx===0?'disabled':''}" data-tup="${idx}">${iconUp()}</span>
-        <span class="row-icon ${idx===state.tags.length-1?'disabled':''}" data-tdown="${idx}">${iconDown()}</span>
-        <span class="row-icon" data-tedit="${idx}">${iconPencil()}</span>
-        <span class="row-icon danger" data-tdel="${idx}">✕</span>
-      </span>
-    </div>`
-  ).join("");
-  tagListEl.querySelectorAll("[data-tup]").forEach(el=>{
-    el.onclick = ()=>{ moveItem(state.tags, parseInt(el.dataset.tup), -1); saveData(); renderSettings(); };
-  });
-  tagListEl.querySelectorAll("[data-tdown]").forEach(el=>{
-    el.onclick = ()=>{ moveItem(state.tags, parseInt(el.dataset.tdown), 1); saveData(); renderSettings(); };
-  });
-  tagListEl.querySelectorAll("[data-tedit]").forEach(el=>{
-    el.onclick = ()=>{ openTagEditor(state.tags[parseInt(el.dataset.tedit)]); };
-  });
-  tagListEl.querySelectorAll("[data-tdel]").forEach(el=>{
-    el.onclick = ()=>{
-      const idx = parseInt(el.dataset.tdel);
-      const name = state.tags[idx];
-      if(!confirm(`「${name}」を削除します。よろしいですか?`)) return;
-      state.tags.splice(idx,1);
-      delete state.tagColors[name];
-      saveData(); renderSettings();
-    };
-  });
-  document.getElementById("add-tag").onclick = ()=> openTagEditor();
-}
-
-/* ---------- tag editor (add/edit name + color) ---------- */
-function openTagEditor(existingName){
-  const isEdit = !!existingName;
-  let selectedColor = isEdit ? getTagColor(existingName) : NATURE_PALETTE[0];
-  const html = `
-    <div class="sheet-title"><span>${isEdit?'タグを編集':'タグを追加'}</span><span id="close-sheet" style="cursor:pointer; color:var(--text-sub);">✕</span></div>
-    <label class="field-label">タグ名</label>
-    <input type="text" id="tag-name-input" value="${isEdit?escapeHtml(existingName):''}" placeholder="例: 冬物用">
-    <label class="field-label">色</label>
-    <div id="tag-color-swatches" style="display:flex; gap:10px; flex-wrap:wrap; margin-top:4px;"></div>
-    <button class="btn btn-primary" id="save-tag-editor">${isEdit?'保存する':'追加する'}</button>
-  `;
-  const wrap = openSheet(html);
-  wrap.querySelector("#close-sheet").onclick = ()=> closeSheet(wrap);
-  function renderSwatches(){
-    const el = wrap.querySelector("#tag-color-swatches");
-    el.innerHTML = NATURE_PALETTE.map(c=>
-      `<span data-color="${c}" style="width:30px; height:30px; border-radius:50%; background:${c}; cursor:pointer; display:inline-block; border:2px solid ${selectedColor===c ? 'var(--accent-dark)' : 'transparent'};"></span>`
-    ).join("");
-    el.querySelectorAll("[data-color]").forEach(sw=>{
-      sw.onclick = ()=>{ selectedColor = sw.dataset.color; renderSwatches(); };
-    });
-  }
-  renderSwatches();
-  wrap.querySelector("#save-tag-editor").onclick = ()=>{
-    const name = wrap.querySelector("#tag-name-input").value.trim();
-    if(!name){ alert("タグ名を入力してください"); return; }
-    if(!state.tagColors) state.tagColors = {};
-    if(isEdit){
-      if(name !== existingName && state.tags.includes(name)){ alert("同じ名前のタグがすでにあります"); return; }
-      const idx = state.tags.indexOf(existingName);
-      state.tags[idx] = name;
-      state.fabrics.forEach(f=>{
-        if(f.tags && f.tags.includes(existingName)){
-          f.tags = f.tags.map(x=> x===existingName ? name : x);
+function migrateCompletedToHistory(){
+  let changed = false;
+  const now = Date.now();
+  state.data.lists.forEach(list => {
+    const stillActive = [];
+    list.items.forEach(item => {
+      if(item.done){
+        const doneTime = item.doneAt ? new Date(item.doneAt).getTime() : now;
+        const elapsed = now - doneTime;
+        if(!isNaN(doneTime) && elapsed >= DONE_GRACE_MS){
+          state.data.history.unshift({
+            id: uid(),
+            text: item.text,
+            listName: list.name,
+            listColor: list.color,
+            date: item.doneAt ? item.doneAt.slice(0,10) : todayStr()
+          });
+          changed = true;
+        }else{
+          stillActive.push(item);
         }
-      });
-      delete state.tagColors[existingName];
-      state.tagColors[name] = selectedColor;
-    } else {
-      if(state.tags.includes(name)){ alert("同じ名前のタグがすでにあります"); return; }
-      state.tags.push(name);
-      state.tagColors[name] = selectedColor;
-    }
-    saveData();
-    closeSheet(wrap);
-    renderSettings();
-  };
-}
-
-function exportBackup(){
-  const blob = new Blob([JSON.stringify(state, null, 2)], {type:"application/json"});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  const today = new Date().toISOString().slice(0,10);
-  a.href = url;
-  a.download = `fabric-stock-backup-${today}.json`;
-  a.click();
-  URL.revokeObjectURL(url);
-  showToast("バックアップを書き出しました");
-}
-function importBackup(e){
-  const file = e.target.files[0];
-  if(!file) return;
-  const reader = new FileReader();
-  reader.onload = ()=>{
-    try{
-      const data = JSON.parse(reader.result);
-      if(!confirm("今のデータを上書きして復元します。よろしいですか?")) return;
-      state = data;
-      if(!state.materials) state.materials = [...DEFAULT_MATERIALS];
-      if(!state.tags) state.tags = [...DEFAULT_TAGS];
-      saveData();
-      showToast("復元しました");
-      renderSettings();
-    }catch(err){
-      alert("ファイルの読み込みに失敗しました。JSON形式のバックアップファイルを選んでください。");
-    }
-  };
-  reader.readAsText(file);
-}
-
-function loadXlsxLib(){
-  if(window.XLSX) return Promise.resolve();
-  return new Promise((resolve, reject)=>{
-    const script = document.createElement("script");
-    script.src = "https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js";
-    script.onload = resolve;
-    script.onerror = reject;
-    document.head.appendChild(script);
-  });
-}
-
-function exportXlsx(){
-  if(state.fabrics.length===0){
-    alert("まだ生地が登録されていません");
-    return;
-  }
-  showToast("書き出し中...");
-  loadXlsxLib().then(()=>{
-    const rows = state.fabrics.map(f=>{
-      const compositionText = (f.composition && f.composition.length)
-        ? f.composition.map(c=> `${c.material||''}${c.percent ? c.percent : ''}`).join('・')
-        : "";
-      return {
-        "生地名": f.name || "",
-        "素材": f.material || "",
-        "残り(m)": parseFloat(f.remainingLength)||0,
-        "購入時(m)": parseFloat(f.boughtLength)||0,
-        "購入日": f.purchaseDate || "",
-        "購入先": f.shop || "",
-        "組成": compositionText,
-        "生地幅": f.width || "",
-        "メモ": f.memo || ""
-      };
-    });
-    const ws = XLSX.utils.json_to_sheet(rows);
-    ws["!cols"] = [
-      {wch:20},{wch:12},{wch:8},{wch:8},{wch:12},{wch:14},{wch:16},{wch:8},{wch:30}
-    ];
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "生地一覧");
-    const today = new Date().toISOString().slice(0,10);
-    XLSX.writeFile(wb, `fabric-note-list-${today}.xlsx`);
-    showToast("書き出しました");
-  }).catch(()=>{
-    alert("書き出しに失敗しました。インターネットに接続した状態でもう一度お試しください。");
-  });
-}
-
-function resetAppCache(){
-  if(!confirm("表示データ(キャッシュ)をリセットします。生地の登録データは消えません。よろしいですか?")) return;
-  const doReload = ()=> location.reload();
-  if("caches" in window){
-    caches.keys().then(keys => Promise.all(keys.map(k => caches.delete(k)))).finally(()=>{
-      if("serviceWorker" in navigator){
-        navigator.serviceWorker.getRegistrations().then(regs=>{
-          Promise.all(regs.map(r=>r.unregister())).finally(doReload);
-        }).catch(doReload);
-      } else {
-        doReload();
+      }else{
+        stillActive.push(item);
       }
     });
-  } else {
-    doReload();
-  }
-}
-
-/* ---------- sheet helper ---------- */
-function openSheet(html){
-  const wrap = document.createElement("div");
-  wrap.className = "sheet-overlay";
-  wrap.innerHTML = `<div class="sheet">${html}</div>`;
-  document.body.appendChild(wrap);
-  wrap.addEventListener("click", (e)=>{ if(e.target===wrap) closeSheet(wrap); });
-  return wrap;
-}
-function closeSheet(wrap){ wrap.remove(); }
-
-/* ---------- photo lightbox ---------- */
-const lightboxEl = document.getElementById("photo-lightbox");
-const lightboxImgEl = document.getElementById("lightbox-img");
-function openLightbox(src){
-  lightboxImgEl.src = src;
-  lightboxEl.classList.add("show");
-}
-function closeLightbox(){
-  lightboxEl.classList.remove("show");
-  lightboxImgEl.src = "";
-}
-document.getElementById("lightbox-close").onclick = closeLightbox;
-lightboxEl.addEventListener("click", (e)=>{ if(e.target===lightboxEl) closeLightbox(); });
-
-/* ---------- photo resize helper ---------- */
-function resizeImage(file, maxDim=900){
-  return new Promise((resolve)=>{
-    const img = new Image();
-    const reader = new FileReader();
-    reader.onload = ()=>{
-      img.onload = ()=>{
-        let w = img.width, h = img.height;
-        if(w > h && w > maxDim){ h = h*maxDim/w; w = maxDim; }
-        else if(h > maxDim){ w = w*maxDim/h; h = maxDim; }
-        const canvas = document.createElement("canvas");
-        canvas.width = w; canvas.height = h;
-        canvas.getContext("2d").drawImage(img, 0, 0, w, h);
-        resolve(canvas.toDataURL("image/jpeg", 0.85));
-      };
-      img.src = reader.result;
-    };
-    reader.readAsDataURL(file);
+    list.items = stillActive;
   });
+  if(changed) saveData();
+  return changed;
+}
+migrateCompletedToHistory();
+
+// アプリを開いたままにしている間も、猶予時間が経過したら自動で履歴へ移す
+setInterval(() => {
+  const changed = migrateCompletedToHistory();
+  if(changed) render();
+}, 5 * 60 * 1000); // 5分ごとに確認
+
+/* ====================== アイコン ====================== */
+const ICONS = {
+  back: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>`,
+  plus: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>`,
+  check: `<svg viewBox="0 0 24 24" fill="none" stroke="#6B5646" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l5 5L20 7"/></svg>`,
+  star: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.6 7.1.7-5.4 4.7 1.6 7-6.2-3.8L5.8 21l1.6-7L2 9.3l7.1-.7z"/></svg>`,
+  starOutline: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 2l2.9 6.6 7.1.7-5.4 4.7 1.6 7-6.2-3.8L5.8 21l1.6-7L2 9.3l7.1-.7z"/></svg>`,
+  trash: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>`,
+  chevron: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>`,
+  gear: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.9l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.9-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1-1.6 1.7 1.7 0 00-1.9.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.9 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.5-1 1.7 1.7 0 00-.3-1.9l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.9.3H9a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.9-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.9V9a1.7 1.7 0 001.5 1h.1a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z"/></svg>`,
+  pencil: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 013 3L7 19l-4 1 1-4z"/></svg>`,
+  basket: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 9c0-3 1.6-5.5 5-5.5S17 6 17 9"/><path d="M4.3 9h15.4l-1.3 9.6a2.3 2.3 0 01-2.3 2H8a2.3 2.3 0 01-2.3-2L4.3 9z"/><path d="M9 12.5v5M12 12.5v5M15 12.5v5"/></svg>`,
+  history: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5l3.5 2"/></svg>`
+};
+
+/* ====================== 描画 ====================== */
+const topbar = document.getElementById("topbar");
+const mainEl = document.getElementById("main");
+const fab = document.getElementById("fab");
+const fabBtn = document.getElementById("fabBtn");
+const homeHeroFixed = document.getElementById("homeHeroFixed");
+const modalBackdrop = document.getElementById("modalBackdrop");
+const modalSheet = document.getElementById("modalSheet");
+
+function render(){
+  if(state.view === "home") renderHome();
+  else if(state.view === "history") renderHistory();
+  else renderDetail();
 }
 
-/* ---------- fabric form (add/edit/copy) ---------- */
-function openFabricForm(existing, copySource){
-  const isEdit = !!existing;
-  const f = existing ? {
-    ...existing,
-    photos:[...(existing.photos||[])],
-    tags:[...(existing.tags||[])],
-    composition: Array.isArray(existing.composition)
-      ? existing.composition.map(c=>({...c}))
-      : (existing.composition ? [{material: existing.composition, percent:""}] : [])
-  } : (copySource ? {
-    id: uid(),
-    name: "",
-    material: copySource.material || (state.materials[0]||""),
-    tags: [...(copySource.tags||[])],
-    boughtLength: "",
-    remainingLength: "",
-    purchaseDate: "",
-    shop: copySource.shop || "",
-    composition: Array.isArray(copySource.composition) ? copySource.composition.map(c=>({...c})) : [],
-    width: copySource.width || "",
-    memo: copySource.memo || "",
-    photos: []
-  } : {
-    id: uid(), name:"", material: state.materials[0]||"", tags:[], boughtLength:"", remainingLength:"",
-    purchaseDate:"", shop:"", composition:[], width:"", memo:"", photos:[]
-  });
-  let remainManuallyEdited = false;
-
-  const matOptions = state.materials.map(m=>`<option value="${m}" ${m===f.material?'selected':''}>${m}</option>`).join("");
-
-  const html = `
-    <div class="sheet-title"><span>${isEdit?'生地を編集':(copySource?'コピーして追加':'生地を追加')}</span><span id="close-sheet" style="cursor:pointer; color:var(--text-sub);">✕</span></div>
-
-    <label class="field-label">写真(最大3枚)</label>
-    <div class="photo-row" id="photo-row"></div>
-    <input type="file" id="photo-input" accept="image/*" style="display:none;">
-
-    <label class="field-label">生地名</label>
-    <input type="text" id="f-name" value="${escapeHtml(f.name)}" placeholder="例: レモンイエロー天竺">
-
-    <label class="field-label">素材</label>
-    <select id="f-material">${matOptions}</select>
-
-    <label class="field-label">用途</label>
-    <div class="tag-select" id="f-tags"></div>
-
-    <label class="field-label">購入時のメートル数</label>
-    <input type="number" id="f-bought" step="0.1" min="0" value="${formatLength(f.boughtLength)}">
-
-    <label class="field-label">現在の残りメートル数</label>
-    <input type="number" id="f-remain" step="0.1" min="0" value="${formatLength(f.remainingLength)}">
-
-    <label class="field-label">購入日</label>
-    <input type="date" id="f-date" value="${f.purchaseDate}">
-
-    <label class="field-label">購入先</label>
-    <div style="position:relative;">
-      <input type="text" id="f-shop" autocomplete="off" value="${escapeHtml(f.shop)}" placeholder="例: ○○生地屋さん">
-      <div id="shop-suggestions" style="display:none; position:absolute; left:0; right:0; top:calc(100% + 4px); background:#fff; border:1px solid var(--border); border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,0.08); z-index:5; max-height:180px; overflow-y:auto;"></div>
-    </div>
-
-    <label class="field-label">組成</label>
-    <div id="composition-rows"></div>
-    <span class="row-icon" id="add-composition" style="display:inline-flex; align-items:center; gap:4px; margin-top:8px; color:var(--accent-dark); font-size:14px;">＋ 素材を追加</span>
-
-    <label class="field-label">生地幅</label>
-    <input type="text" id="f-width" value="${escapeHtml(f.width||'')}" placeholder="例: 約145cm前後">
-
-    <label class="field-label">メモ</label>
-    <div style="position:relative;">
-      <textarea id="f-memo" placeholder="">${escapeHtml(f.memo)}</textarea>
-      <div id="memo-fake-placeholder" style="position:absolute; top:9px; left:10px; display:flex; align-items:center; gap:4px; color:var(--text-mute); pointer-events:none; font-size:16px;">
-        <span>ひとことメモ</span>${iconPencil()}
-      </div>
-    </div>
-
-    <button class="btn btn-primary" id="save-fabric">${isEdit?'保存する':'追加する'}</button>
-    ${isEdit ? '<button class="btn btn-danger-outline" id="delete-fabric">この生地を削除</button>' : ''}
+function renderHome(){
+  const showGearBadge = !getOnboarding().gearBadgeSeen;
+  topbar.innerHTML = `
+    <h1><span class="title-icon">${ICONS.basket}</span>お買い物リスト</h1>
+    <button class="iconbtn" id="historyBtn">${ICONS.history}</button>
+    <button class="iconbtn" id="settingsBtn">${ICONS.gear}${showGearBadge ? '<span class="gear-badge"></span>' : ''}</button>
   `;
-  const wrap = openSheet(html);
-  wrap.querySelector("#close-sheet").onclick = ()=> closeSheet(wrap);
-
-  function renderPhotoRow(){
-    const row = wrap.querySelector("#photo-row");
-    let html2 = "";
-    f.photos.forEach((p, idx)=>{
-      html2 += `<div class="photo-slot"><img src="${p}"><span class="remove-x" data-rm="${idx}">✕</span></div>`;
-    });
-    if(f.photos.length < 3){
-      html2 += `<div class="photo-slot" id="add-photo-slot"><span style="color:var(--text-mute); font-size:22px;">＋</span></div>`;
+  document.getElementById("historyBtn").onclick = () => { state.view = "history"; render(); };
+  document.getElementById("settingsBtn").onclick = () => {
+    if(!getOnboarding().gearBadgeSeen){
+      setOnboarding({ gearBadgeSeen:true });
     }
-    row.innerHTML = html2;
-    row.querySelectorAll("[data-rm]").forEach(el=>{
-      el.onclick = ()=>{ f.photos.splice(parseInt(el.dataset.rm),1); renderPhotoRow(); };
-    });
-    const addSlot = row.querySelector("#add-photo-slot");
-    if(addSlot) addSlot.onclick = ()=> wrap.querySelector("#photo-input").click();
-  }
-  wrap.querySelector("#photo-input").onchange = async (e)=>{
-    const file = e.target.files[0];
-    if(!file) return;
-    const dataUrl = await resizeImage(file);
-    f.photos.push(dataUrl);
-    renderPhotoRow();
-    e.target.value = "";
+    openSettingsModal();
   };
-  renderPhotoRow();
+  fab.style.display = "block";
+  fabBtn.innerHTML = `${ICONS.plus} 新しいリスト`;
+  fabBtn.onclick = () => openListModal(null);
 
-  // メモ欄:偽プレースホルダー(テキスト+アイコン)の表示切替
-  const memoInput = wrap.querySelector("#f-memo");
-  const memoFakePlaceholder = wrap.querySelector("#memo-fake-placeholder");
-  function updateMemoPlaceholder(){
-    memoFakePlaceholder.style.display = memoInput.value.trim()==="" ? "flex" : "none";
-  }
-  memoInput.addEventListener("input", updateMemoPlaceholder);
-  memoFakePlaceholder.onclick = ()=> memoInput.focus();
-  updateMemoPlaceholder();
-
-  const tagsWrap = wrap.querySelector("#f-tags");
-  function renderTagSelect(){
-    tagsWrap.innerHTML = state.tags.map(t=>
-      `<span class="tag-option ${f.tags.includes(t)?'selected':''}" data-t="${t}">${t}</span>`
-    ).join("");
-    tagsWrap.querySelectorAll(".tag-option").forEach(el=>{
-      el.onclick = ()=>{
-        const t = el.dataset.t;
-        if(f.tags.includes(t)) f.tags = f.tags.filter(x=>x!==t);
-        else f.tags.push(t);
-        renderTagSelect();
-      };
-    });
-  }
-  renderTagSelect();
-
-  // 購入時のメートル数 → 残りメートル数への自動反映(新規追加時のみ・手動編集後は止める)
-  if(!isEdit){
-    const boughtInput = wrap.querySelector("#f-bought");
-    const remainInput = wrap.querySelector("#f-remain");
-    remainInput.addEventListener("input", ()=>{ remainManuallyEdited = true; });
-    boughtInput.addEventListener("input", ()=>{
-      if(!remainManuallyEdited){ remainInput.value = boughtInput.value; }
-    });
+  if(state.data.lists.length === 0){
+    document.body.classList.remove("scroll-lock");
+    homeHeroFixed.style.display = "none";
+    mainEl.classList.remove("with-hero");
+    mainEl.style.paddingBottom = "";
+    mainEl.innerHTML = `<div class="empty-hint"><img src="panda-empty.png" alt=""><br>まだリストがありません。<br>下のボタンから作ってみてください🛍️</div>`;
+    return;
   }
 
-  // 購入先オートコンプリート
-  const shopInput = wrap.querySelector("#f-shop");
-  const shopSuggestEl = wrap.querySelector("#shop-suggestions");
-  function renderShopSuggestions(){
-    const kw = shopInput.value.trim();
-    const list = loadShopHistory().filter(s => !kw || s.includes(kw));
-    if(list.length === 0){ shopSuggestEl.style.display = "none"; shopSuggestEl.innerHTML=""; return; }
-    shopSuggestEl.innerHTML = list.map(s => `
-      <div class="shop-suggest-item" data-shop="${escapeHtml(s)}" style="display:flex; align-items:center; justify-content:space-between; padding:8px 10px; font-size:14px; cursor:pointer;">
-        <span data-pick="${escapeHtml(s)}" style="flex:1;">${escapeHtml(s)}</span>
-        <span class="row-icon danger" data-remove-shop="${escapeHtml(s)}" style="margin-left:8px; font-size:12px;">✕</span>
-      </div>`).join("");
-    shopSuggestEl.style.display = "block";
-    shopSuggestEl.querySelectorAll("[data-pick]").forEach(el=>{
-      el.onclick = ()=>{ shopInput.value = el.dataset.pick; shopSuggestEl.style.display = "none"; };
-    });
-    shopSuggestEl.querySelectorAll("[data-remove-shop]").forEach(el=>{
-      el.onclick = (ev)=>{
-        ev.stopPropagation();
-        removeShopFromHistory(el.dataset.removeShop);
-        renderShopSuggestions();
-      };
-    });
-  }
-  shopInput.addEventListener("focus", renderShopSuggestions);
-  shopInput.addEventListener("input", renderShopSuggestions);
-  shopInput.addEventListener("blur", ()=>{ setTimeout(()=>{ shopSuggestEl.style.display = "none"; }, 150); });
+  document.body.classList.add("scroll-lock");
+  homeHeroFixed.style.display = "block";
+  mainEl.classList.add("with-hero");
+  mainEl.style.paddingBottom = "";
 
-  function renderCompositionRows(){
-    const rowsEl = wrap.querySelector("#composition-rows");
-    // 過去に入力された素材名を全生地から収集(オートコンプリート候補用)
-    const allMaterialNames = new Set();
-    state.fabrics.forEach(ff=>{
-      (ff.composition||[]).forEach(c=>{ if(c.material && c.material.trim()) allMaterialNames.add(c.material.trim()); });
+  const cardsHtml = state.data.lists.map(list => {
+    const remaining = list.items.filter(i => !i.done).length;
+    return `
+      <div class="list-card" data-id="${list.id}">
+        <div class="dot" style="background:${list.color}"></div>
+        <div class="name">${escapeHtml(list.name)}</div>
+        <div class="count">${remaining}</div>
+        <button class="list-edit-btn" data-id="${list.id}">${ICONS.pencil}</button>
+      </div>
+    `;
+  }).join("");
+
+  // (11) 並び替えヒント: リストが2件以上になった最初のタイミングで一度だけ表示
+  const showReorderHint = state.data.lists.length >= 2 && !getOnboarding().reorderHintSeen;
+  const reorderHintHtml = showReorderHint ? `
+    <div class="reorder-panda-hint">
+      <img src="panda13.png" alt="">
+      <div>📌 長押しで並び替えできるよ</div>
+    </div>
+  ` : ``;
+  if(showReorderHint) setOnboarding({ reorderHintSeen:true });
+
+  mainEl.innerHTML = `${reorderHintHtml}<div class="list-scroll-area" id="listScrollArea">${cardsHtml}</div>`;
+  const listScrollArea = document.getElementById("listScrollArea");
+
+  listScrollArea.querySelectorAll(".list-card").forEach(card => {
+    card.addEventListener("click", () => {
+      state.currentListId = card.dataset.id;
+      state.view = "detail";
+      render();
     });
-    rowsEl.innerHTML = f.composition.map((c, idx)=>{
-      const usedBySiblings = f.composition
-        .filter((cc,i)=> i!==idx)
-        .map(cc=>cc.material)
-        .filter(Boolean);
-      const options = [...allMaterialNames].filter(n=> !usedBySiblings.includes(n));
-      const datalistId = `comp-mat-list-${idx}`;
-      return `
-      <div style="display:flex; gap:8px; margin-top:6px; align-items:center;">
-        <input type="text" class="comp-material" list="${datalistId}" data-idx="${idx}" value="${escapeHtml(c.material||'')}" placeholder="例: コットン" style="flex:2;">
-        <datalist id="${datalistId}">${options.map(n=>`<option value="${escapeHtml(n)}">`).join("")}</datalist>
-        <input type="text" class="comp-percent" data-idx="${idx}" value="${escapeHtml(c.percent||'')}" placeholder="例: 95%" style="flex:1;">
-        <span class="row-icon danger" data-comp-del="${idx}">✕</span>
-      </div>`;
-    }).join("");
-    rowsEl.querySelectorAll(".comp-material").forEach(el=>{
-      el.oninput = ()=>{ f.composition[parseInt(el.dataset.idx)].material = el.value; };
-      el.onchange = ()=>{ renderCompositionRows(); };
+  });
+
+  listScrollArea.querySelectorAll(".list-edit-btn").forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      openListModal(btn.dataset.id);
     });
-    rowsEl.querySelectorAll(".comp-percent").forEach(el=>{
-      el.oninput = ()=>{ f.composition[parseInt(el.dataset.idx)].percent = el.value; };
-      el.onblur = ()=>{
-        let v = el.value.trim();
-        if(v && /\d/.test(v) && !v.includes("%")) v = v + "%";
-        el.value = v;
-        f.composition[parseInt(el.dataset.idx)].percent = v;
-      };
+  });
+
+  attachReorderHandlers(listScrollArea);
+
+  adjustHomeScrollPadding();
+}
+
+/* ====================== (11) リストカードの長押し並び替え ====================== */
+function attachReorderHandlers(container){
+  if(state.data.lists.length < 2) return;
+
+  container.querySelectorAll(".list-card").forEach(card => {
+    let pressTimer = null;
+    let startX = 0, startY = 0;
+    let longPressFired = false;
+
+    const cancelPress = () => {
+      if(pressTimer){ clearTimeout(pressTimer); pressTimer = null; }
+    };
+
+    card.addEventListener("pointerdown", (e) => {
+      if(e.target.closest(".list-edit-btn")) return;
+      if(e.pointerType === "mouse" && e.button !== 0) return;
+      startX = e.clientX; startY = e.clientY;
+      longPressFired = false;
+      pressTimer = setTimeout(() => {
+        longPressFired = true;
+        startListDrag(card, e, container);
+      }, 450);
     });
-    rowsEl.querySelectorAll("[data-comp-del]").forEach(el=>{
-      el.onclick = ()=>{ f.composition.splice(parseInt(el.dataset.compDel),1); renderCompositionRows(); };
+
+    card.addEventListener("pointermove", (e) => {
+      if(pressTimer){
+        if(Math.abs(e.clientX - startX) > 10 || Math.abs(e.clientY - startY) > 10) cancelPress();
+      }
+    });
+
+    card.addEventListener("pointerup", cancelPress);
+    card.addEventListener("pointercancel", cancelPress);
+
+    // 長押し→ドラッグが発火した場合は、直後の click(=リスト詳細へ遷移)を打ち消す
+    card.addEventListener("click", (e) => {
+      if(longPressFired){
+        e.stopPropagation();
+        e.preventDefault();
+        longPressFired = false;
+      }
+    }, true);
+  });
+}
+
+function startListDrag(card, startEvent, container){
+  if(navigator.vibrate) navigator.vibrate(12);
+
+  const cards = Array.from(container.querySelectorAll(".list-card"));
+  const draggedId = card.dataset.id;
+  const containerRect = container.getBoundingClientRect();
+
+  // ドラッグ開始時点の各カードの位置(コンテナのコンテンツ基準・スクロール量を考慮)を記録
+  const scrollTopAtStart = container.scrollTop;
+  const originalRects = cards.map(c => {
+    const r = c.getBoundingClientRect();
+    return { id: c.dataset.id, top: (r.top - containerRect.top) + scrollTopAtStart, height: r.height };
+  });
+  const draggedIndex = originalRects.findIndex(r => r.id === draggedId);
+  const slotHeight = originalRects.length > 1
+    ? (originalRects[1].top - originalRects[0].top)
+    : (originalRects[0].height + 12);
+  const cardRect = card.getBoundingClientRect();
+  const offsetWithinCard = startEvent.clientY - cardRect.top;
+
+  const otherIdsInOrder = originalRects.filter(r => r.id !== draggedId).map(r => r.id);
+  let currentTargetIndex = draggedIndex;
+
+  container.classList.add("reordering");
+  document.body.classList.add("dragging-active");
+  card.classList.add("dragging");
+  card.style.top = originalRects[draggedIndex].top + "px";
+  card.style.height = originalRects[draggedIndex].height + "px";
+  try{ card.setPointerCapture(startEvent.pointerId); }catch(e){}
+
+  function applyOtherCardTransforms(targetIndex){
+    // targetIndex: ドラッグ中カードが今どの位置に割り込んでいるか
+    const newOrder = otherIdsInOrder.slice(0, targetIndex)
+      .concat([draggedId])
+      .concat(otherIdsInOrder.slice(targetIndex));
+
+    cards.forEach(c => {
+      if(c === card) return;
+      const orig = originalRects.find(r => r.id === c.dataset.id);
+      const newIdx = newOrder.indexOf(c.dataset.id);
+      const newTop = newIdx * slotHeight + originalRects[0].top;
+      c.style.transform = `translateY(${newTop - orig.top}px)`;
     });
   }
-  renderCompositionRows();
-  wrap.querySelector("#add-composition").onclick = ()=>{
-    f.composition.push({material:"", percent:""});
-    renderCompositionRows();
+
+  function onMove(e){
+    const maxTop = container.scrollHeight - originalRects[draggedIndex].height;
+    let top = (e.clientY - containerRect.top) + container.scrollTop - offsetWithinCard;
+    top = Math.max(0, Math.min(top, Math.max(0, maxTop)));
+    card.style.top = top + "px";
+
+    const dragCenter = top + originalRects[draggedIndex].height / 2 - originalRects[0].top;
+    let targetIndex = Math.round(dragCenter / slotHeight);
+    targetIndex = Math.max(0, Math.min(targetIndex, otherIdsInOrder.length));
+    if(targetIndex !== currentTargetIndex){
+      currentTargetIndex = targetIndex;
+      applyOtherCardTransforms(targetIndex);
+    }
+  }
+
+  function onUp(){
+    card.removeEventListener("pointermove", onMove);
+    card.removeEventListener("pointerup", onUp);
+    card.removeEventListener("pointercancel", onUp);
+
+    const newOrderIds = otherIdsInOrder.slice(0, currentTargetIndex)
+      .concat([draggedId])
+      .concat(otherIdsInOrder.slice(currentTargetIndex));
+
+    // state.data.lists を新しい順番に並び替え
+    const listsById = {};
+    state.data.lists.forEach(l => { listsById[l.id] = l; });
+    state.data.lists = newOrderIds.map(id => listsById[id]);
+
+    saveData();
+    document.body.classList.remove("dragging-active");
+    render();
+  }
+
+  card.addEventListener("pointermove", onMove);
+  card.addEventListener("pointerup", onUp);
+  card.addEventListener("pointercancel", onUp);
+}
+
+/* (10) ホーム画面: リスト表示エリアの高さを、パンダちゃんの少し上までに区切る。
+   これにより、どれだけスクロールしてもリストがパンダの領域に入り込まない */
+function adjustHomeScrollPadding(){
+  if(state.view !== "home" || state.data.lists.length === 0) return;
+  const listScrollArea = document.getElementById("listScrollArea");
+  if(!listScrollArea) return;
+  requestAnimationFrame(() => {
+    const heroRect = homeHeroFixed.getBoundingClientRect();
+    const areaRect = listScrollArea.getBoundingClientRect();
+    const gapAbovePanda = 20; // パンダちゃんの「ちょっと上」の余白
+    const availableHeight = heroRect.top - areaRect.top - gapAbovePanda;
+    listScrollArea.style.height = Math.max(80, availableHeight) + "px";
+  });
+}
+window.addEventListener("resize", adjustHomeScrollPadding);
+window.addEventListener("load", adjustHomeScrollPadding);
+{
+  const heroImg = homeHeroFixed.querySelector("img");
+  if(heroImg){
+    if(heroImg.complete) adjustHomeScrollPadding();
+    else heroImg.addEventListener("load", adjustHomeScrollPadding);
+  }
+}
+
+function getCurrentList(){
+  return state.data.lists.find(l => l.id === state.currentListId);
+}
+
+function renderDetail(){
+  const list = getCurrentList();
+  if(!list){ state.view = "home"; render(); return; }
+
+  topbar.innerHTML = `
+    <button class="iconbtn back-btn" id="backBtn">${ICONS.back}</button>
+    <h1>${escapeHtml(list.name)}</h1>
+  `;
+  document.getElementById("backBtn").onclick = () => { state.view = "home"; render(); };
+
+  document.body.classList.remove("scroll-lock");
+  fab.style.display = "none";
+  homeHeroFixed.style.display = "none";
+  mainEl.classList.remove("with-hero");
+  mainEl.style.paddingBottom = "";
+
+  const activeItems = list.items.filter(i => !i.done);
+  const activeTexts = new Set(activeItems.map(i => i.text));
+  const favChips = list.favorites.filter(f => !activeTexts.has(f.text));
+
+  let html = "";
+
+  html += `
+    <div class="add-row">
+      <input type="text" id="newItemInput" placeholder="追加するものを入力…" maxlength="40">
+      <button id="addItemBtn" style="background:${list.color}">${ICONS.plus}</button>
+    </div>
+  `;
+
+  if(list.items.length === 0){
+    html += `<div class="empty-hint"><img src="panda-empty.png" alt=""><br>まだ何もありません。<br>上の入力欄から追加してね📝</div>`;
+  }
+
+  html += list.items.map(item => itemRowHtml(item, list.color)).join("");
+
+  if(list.favorites.length > 0){
+    html += `
+      <div class="fav-section">
+        <div class="fav-label">${ICONS.star.replace('viewBox="0 0 24 24"','viewBox="0 0 24 24" width="12" height="12"')} よく買うもの</div>
+        <div class="fav-scroll">
+          ${list.favorites.map(f => {
+            const alreadyIn = activeTexts.has(f.text);
+            return `<div class="fav-chip ${alreadyIn?'added':''}" data-text="${escapeAttr(f.text)}">${alreadyIn?'✓ ':'+ '}${escapeHtml(f.text)}</div>`;
+          }).join("")}
+        </div>
+      </div>
+    `;
+  }
+
+  if(list.items.length > 0){
+    html += `<div class="detail-watch-panda"><img src="panda-watch.png" alt=""></div>`;
+  }
+
+  mainEl.innerHTML = html;
+
+  // イベント設定
+  const input = document.getElementById("newItemInput");
+  const addBtn = document.getElementById("addItemBtn");
+  const doAdd = () => {
+    const text = input.value.trim();
+    if(!text) return;
+    list.items.unshift({ id: uid(), text, done:false, starred:false });
+    input.value = "";
+    saveData();
+    render();
   };
+  addBtn.onclick = doAdd;
+  input.addEventListener("keydown", e => { if(e.key === "Enter") doAdd(); });
 
-  wrap.querySelector("#save-fabric").onclick = ()=>{
-    if(isEdit && !confirm("この内容で上書き保存します。よろしいですか?")) return;
+  mainEl.querySelectorAll(".fav-chip").forEach(chip => {
+    chip.addEventListener("click", () => {
+      if(chip.classList.contains("added")) return;
+      const text = chip.dataset.text;
+      list.items.unshift({ id: uid(), text, done:false, starred:true });
+      saveData();
+      render();
+    });
+  });
 
-    f.name = wrap.querySelector("#f-name").value.trim();
-    f.material = wrap.querySelector("#f-material").value;
-    f.boughtLength = Math.max(0, parseFloat(wrap.querySelector("#f-bought").value) || 0).toFixed(1);
-    f.remainingLength = Math.max(0, parseFloat(wrap.querySelector("#f-remain").value) || 0).toFixed(1);
-    f.purchaseDate = wrap.querySelector("#f-date").value;
-    f.shop = wrap.querySelector("#f-shop").value.trim();
-    f.composition = f.composition.filter(c => (c.material && c.material.trim()) || (c.percent && c.percent.trim()));
-    f.width = wrap.querySelector("#f-width").value.trim();
-    f.memo = wrap.querySelector("#f-memo").value.trim();
+  mainEl.querySelectorAll(".item-row").forEach(row => {
+    const itemId = row.dataset.id;
+    const item = list.items.find(i => i.id === itemId);
+    row.querySelector(".check").addEventListener("click", () => {
+      item.done = !item.done;
+      item.doneAt = item.done ? nowISO() : null;
+      saveData();
+      render();
+    });
+    row.querySelector(".starbtn").addEventListener("click", () => {
+      item.starred = !item.starred;
+      if(item.starred){
+        if(!list.favorites.some(f => f.text === item.text)){
+          list.favorites.push({ id: uid(), text: item.text });
+        }
+      }else{
+        list.favorites = list.favorites.filter(f => f.text !== item.text);
+      }
+      saveData();
+      render();
+    });
+    row.querySelector(".trashbtn").addEventListener("click", () => {
+      if(!confirm(`「${item.text}」を削除しますか?`)) return;
+      list.items = list.items.filter(i => i.id !== itemId);
+      saveData();
+      render();
+    });
+  });
 
-    if(!f.name){ alert("生地名を入力してください"); return; }
+}
 
-    addShopToHistory(f.shop);
+function renderHistory(){
+  topbar.innerHTML = `
+    <button class="iconbtn back-btn" id="backBtn">${ICONS.back}</button>
+    <h1>完了タスク</h1>
+  `;
+  document.getElementById("backBtn").onclick = () => { state.view = "home"; render(); };
+  document.body.classList.remove("scroll-lock");
+  fab.style.display = "none";
+  homeHeroFixed.style.display = "none";
+  mainEl.classList.remove("with-hero");
+  mainEl.style.paddingBottom = "";
 
-    if(isEdit){
-      const idx = state.fabrics.findIndex(x=>x.id===f.id);
-      state.fabrics[idx] = f;
-    } else {
-      state.fabrics.push(f);
+  const history = state.data.history;
+  if(history.length === 0){
+    mainEl.innerHTML = `<div class="empty-hint"><img src="panda-empty.png" alt=""><br>まだ履歴がありません。<br>チェックしたものが、ここに残っていくよ📋</div>`;
+    return;
+  }
+
+  const groups = {};
+  const order = [];
+  history.forEach(entry => {
+    if(!groups[entry.date]){ groups[entry.date] = []; order.push(entry.date); }
+    groups[entry.date].push(entry);
+  });
+  order.sort((a,b) => b.localeCompare(a));
+
+  mainEl.innerHTML = order.map(date => `
+    <div class="history-date">${formatDateJa(date)}</div>
+    ${groups[date].map(entry => `
+      <div class="history-item" data-id="${entry.id}">
+        <div class="history-check" style="background:${entry.listColor}">${ICONS.check}</div>
+        <div class="history-body">
+          <div class="history-text">${escapeHtml(entry.text)}</div>
+          <div class="history-list"><span class="dot" style="background:${entry.listColor}"></span>${escapeHtml(entry.listName)}</div>
+        </div>
+        <button class="history-delete-btn" data-id="${entry.id}">${ICONS.trash}</button>
+      </div>
+    `).join("")}
+  `).join("");
+
+  mainEl.querySelectorAll(".history-delete-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const entryId = btn.dataset.id;
+      const entry = state.data.history.find(h => h.id === entryId);
+      if(!entry) return;
+      if(!confirm(`「${entry.text}」を履歴から削除しますか?`)) return;
+      state.data.history = state.data.history.filter(h => h.id !== entryId);
+      saveData();
+      render();
+    });
+  });
+}
+function formatDateJa(dateStr){
+  const [y,m,d] = dateStr.split("-").map(Number);
+  const weekdays = ["日","月","火","水","木","金","土"];
+  const dt = new Date(y, m-1, d);
+  return `${m}月${d}日(${weekdays[dt.getDay()]})`;
+}
+
+function itemRowHtml(item, color){
+  const checkStyle = item.done
+    ? `border-color:${color};background:${color};`
+    : `border-color:${color};`;
+  return `
+    <div class="item-row ${item.done?'done':''}" data-id="${item.id}">
+      <div class="check ${item.done?'done':''}" style="${checkStyle}">${ICONS.check}</div>
+      <div class="item-text">${escapeHtml(item.text)}</div>
+      <button class="starbtn ${item.starred?'on':''}">${item.starred?ICONS.star:ICONS.starOutline}</button>
+      <button class="trashbtn">${ICONS.trash}</button>
+    </div>
+  `;
+}
+
+/* ====================== モーダル(リスト追加・編集) ====================== */
+function openListModal(listId){
+  const editing = !!listId;
+  const list = editing ? state.data.lists.find(l => l.id === listId) : null;
+  let selectedColor = list ? list.color : PALETTE[state.data.lists.length % PALETTE.length];
+
+  // 他のリストで既に使われている色(編集中の自分自身は除く)
+  const usedColors = state.data.lists
+    .filter(l => !editing || l.id !== listId)
+    .map(l => l.color);
+
+  modalSheet.innerHTML = `
+    <h2>${editing ? "リストを編集" : "新しいリスト"}</h2>
+    <input type="text" id="listNameInput" placeholder="リスト名(例：食料品)" maxlength="20" value="${editing?escapeAttr(list.name):''}">
+    <div class="color-row" id="colorRow">
+      ${PALETTE.map(c => {
+        const isUsed = usedColors.includes(c);
+        return `<div class="color-swatch ${c===selectedColor?'selected':''} ${isUsed?'disabled':''}" data-color="${c}" style="background:${c}"></div>`;
+      }).join("")}
+    </div>
+    <div class="modal-actions">
+      ${editing ? `<button class="btn" id="deleteListBtn">削除</button>` : ``}
+      <button class="btn" id="cancelBtn">キャンセル</button>
+      <button class="btn" id="saveListBtn">${editing?"保存":"作成"}</button>
+    </div>
+  `;
+  modalBackdrop.classList.remove("hidden");
+
+  modalSheet.querySelectorAll(".color-swatch").forEach(sw => {
+    sw.addEventListener("click", () => {
+      if(sw.classList.contains("disabled")) return;
+      selectedColor = sw.dataset.color;
+      modalSheet.querySelectorAll(".color-swatch").forEach(s => s.classList.remove("selected"));
+      sw.classList.add("selected");
+    });
+  });
+
+  document.getElementById("cancelBtn").onclick = closeModal;
+
+  document.getElementById("saveListBtn").onclick = () => {
+    const name = document.getElementById("listNameInput").value.trim();
+    if(!name) return;
+    if(editing){
+      list.name = name;
+      list.color = selectedColor;
+    }else{
+      state.data.lists.push({ id: uid(), name, color: selectedColor, items:[], favorites:[] });
     }
     saveData();
-    closeSheet(wrap);
-    showToast(isEdit ? "保存しました" : "追加しました");
+    closeModal();
     render();
   };
 
-  if(isEdit){
-    wrap.querySelector("#delete-fabric").onclick = ()=>{
-      if(!confirm("この生地を削除します。よろしいですか?(使った履歴は残ります)")) return;
-      state.fabrics = state.fabrics.filter(x=>x.id!==f.id);
+  if(editing){
+    document.getElementById("deleteListBtn").onclick = () => {
+      if(!confirm(`「${list.name}」を削除しますか?中の項目もすべて消えます。`)) return;
+      state.data.lists = state.data.lists.filter(l => l.id !== listId);
       saveData();
-      closeSheet(wrap);
+      closeModal();
+      state.view = "home";
       render();
     };
   }
 }
 
-/* ---------- fabric detail ---------- */
-function openFabricDetail(id){
-  const f = state.fabrics.find(x=>x.id===id);
-  if(!f) return;
-  const history = state.usageHistory.filter(h=>h.fabricId===id).sort((a,b)=>b.date.localeCompare(a.date));
+/* ====================== モーダル(使い方ヘルプ) ====================== */
+function openHelpModal(){
+  modalSheet.innerHTML = `
+    <h2>📖 使い方ガイド</h2>
+    <div class="help-content">
+      <p>🐼 このアプリは、買い物や「やること」を気軽に管理できるシンプルなリストアプリです。</p>
+      <p>使い方はとても簡単♪</p>
+      <p>① 「＋新しいリスト」を押してリストを作ります。<br>(例：買うもの、美容、ドラッグストア など)</p>
+      <p>② リストを開いて、追加したい項目を入力します。</p>
+      <p>③ 終わった項目はチェック!<br>チェックした項目は削除されず、画面上部の🕒(時計マーク)の「履歴」に移動します。<br>※ チェックしてすぐには移動しません。少しの間は取り消せるので、うっかりチェックしてしまっても安心です。</p>
+      <p>④ 削除するときは確認メッセージが表示されるので、間違って消してしまう心配はありません。</p>
+      <p>⑤ リストごとに色を付けられます。<br>同じ色は選べないので、一目で見分けられます。</p>
+      <p>データはご自身のスマホの中だけに保存されます。他の人と共有されることはないので、それぞれのスマホで自由に使ってね。</p>
 
-  const photosHtml = (f.photos&&f.photos.length)
-    ? `<div class="detail-photos">${f.photos.map(p=>`<img src="${p}">`).join("")}</div>`
-    : "";
-  const tagsHtml = (f.tags||[]).map(t=>`<span class="tag-badge" style="background:${getTagColor(t)}; color:${getTagTextColor(t)};">${escapeHtml(t)}</span>`).join("");
-  const compositionText = (f.composition && f.composition.length)
-    ? f.composition.map(c=> `${c.material||''}${c.percent ? c.percent : ''}`).join('・')
-    : "";
+      <h3>💾 バックアップについて</h3>
+      <p>このアプリのデータは、ご利用のスマホ（またはパソコン）の中だけに保存されます。<br>
+      そのため、機種変更やブラウザのデータ削除などを行うと、リストが消えてしまう場合があります。</p>
+      <p>大切なリストがある時は、「設定」→「バックアップ」からデータ（JSONファイル）を保存しておいてください。<br>
+      保存したファイルは、<br>
+      ・iCloud<br>
+      ・Googleドライブ<br>
+      ・OneDrive<br>
+      ・メール<br>
+      など、ご自身が管理しやすい場所に保管してください。</p>
 
-  const historyHtml = history.length
-    ? history.map(h=>`
-        <div class="history-item" style="flex-direction:column; align-items:flex-start;">
-          <div style="display:flex; justify-content:space-between; width:100%;">
-            <span>${escapeHtml(h.itemName)}</span>
-            <span class="history-sub">${h.usedLength}m ・ ${h.date}</span>
-          </div>
-          ${h.memo ? `<span class="history-sub" style="margin-top:2px;">📝 ${escapeHtml(h.memo)}</span>` : ""}
-        </div>`).join("")
-    : `<p style="font-size:13px; color:var(--text-mute);">まだ使った履歴がありません</p>`;
+      <p class="help-subhead">📱 パソコンとスマホについて</p>
+      <p>スマホ版とパソコン版のデータは自動では同期されません。<br>
+      同じリストを両方で使いたい場合は、「バックアップ」→「復元」を使って、手動でデータを移してください。</p>
+      <p>⚠️ 復元を行うと、現在のデータは選択したバックアップの内容に置き換わります。<br>
+      現在のデータとバックアップの内容を合体（結合）することはできません。</p>
+      <p class="help-panda-tip">🐼 大切なリストは、ときどきバックアップしておくと安心だよ♪</p>
 
-  const html = `
-    <div class="sheet-title"><span>${escapeHtml(f.name)}</span><span id="close-sheet" style="cursor:pointer; color:var(--text-sub);">✕</span></div>
-    ${photosHtml}
-    <div>${tagsHtml}</div>
-    <div style="margin-top:8px;">
-      <div class="detail-row"><span class="k">素材</span><span>${escapeHtml(f.material)}</span></div>
-      <div class="detail-row"><span class="k">残り / 購入時</span><span>${formatLength(f.remainingLength||0)}m / ${formatLength(f.boughtLength||0)}m</span></div>
-      <div class="detail-row"><span class="k">購入日</span><span>${f.purchaseDate||"-"}</span></div>
-      <div class="detail-row"><span class="k">購入先</span><span>${escapeHtml(f.shop)||"-"}</span></div>
-      ${compositionText ? `<div class="detail-row"><span class="k">組成</span><span style="text-align:right; max-width:70%;">${escapeHtml(compositionText)}</span></div>` : ""}
-      ${f.width ? `<div class="detail-row"><span class="k">生地幅</span><span>${escapeHtml(f.width)}</span></div>` : ""}
-      ${f.memo ? `<div class="detail-row"><span class="k">メモ</span><span style="text-align:right; max-width:70%;">${escapeHtml(f.memo)}</span></div>` : ""}
+      <h3>📱 ホーム画面に追加する方法</h3>
+
+      <p class="help-subhead">【iPhoneの場合】</p>
+      <p>① Safariでこのページを開く<br>
+      ② 下の「共有」ボタン(四角に上矢印のマーク)をタップ<br>
+      ③ 「ホーム画面に追加」を選ぶ<br>
+      ④ 右上の「追加」をタップして完了</p>
+
+      <p class="help-subhead">【Androidの場合】</p>
+      <p>① Chromeでこのページを開く<br>
+      ② 右上の「⋮」(縦三点リーダー)をタップ<br>
+      ③ 「ホーム画面に追加」または「アプリをインストール」を選ぶ<br>
+      ④ 表示された案内に沿って追加すれば完了</p>
+
+      <p class="help-note">※ iPhoneはSafari、AndroidはChromeで開くのがおすすめです(他のブラウザだと「ホーム画面に追加」が出てこないことがあります)。</p>
+      <p>🐼 たくさん使ってもらえたら嬉しいな♪</p>
     </div>
-
-    <div class="section-title">使った履歴</div>
-    ${historyHtml}
-
-    <button class="btn btn-primary" id="add-usage">この生地を使ったよ</button>
-    <button class="btn btn-secondary" id="edit-fabric">この生地を編集</button>
-    <button class="btn btn-secondary" id="copy-fabric">色違いをコピーして追加</button>
+    <div class="modal-actions">
+      <button class="btn" id="helpCloseBtn">閉じる</button>
+    </div>
   `;
-  const wrap = openSheet(html);
-  wrap.querySelectorAll(".detail-photos img").forEach(img=>{
-    img.onclick = ()=> openLightbox(img.src);
-  });
-  wrap.querySelector("#close-sheet").onclick = ()=> closeSheet(wrap);
-  wrap.querySelector("#add-usage").onclick = ()=>{ closeSheet(wrap); openUsageForm(f.id); };
-  wrap.querySelector("#edit-fabric").onclick = ()=>{ closeSheet(wrap); openFabricForm(f); };
-  wrap.querySelector("#copy-fabric").onclick = ()=>{ closeSheet(wrap); openFabricForm(null, f); };
+  modalBackdrop.classList.remove("hidden");
+  document.getElementById("helpCloseBtn").onclick = closeModal;
 }
 
-/* ---------- usage form ---------- */
-function openUsageForm(preselectFabricId, editId){
-  if(state.fabrics.length===0){
-    alert("先に生地を登録してください");
-    return;
+/* ====================== モーダル(設定メニュー) ====================== */
+function openSettingsModal(){
+  const showHint = !getOnboarding().settingsHintSeen;
+
+  modalSheet.innerHTML = `
+    <h2>⚙️ 設定</h2>
+    ${showHint ? `
+      <div class="settings-panda-hint">
+        <img src="panda13.png" alt="">
+        <div>困ったら「使い方ガイド」を見てね♪</div>
+      </div>
+    ` : ``}
+    <div class="settings-menu">
+      <button class="settings-item" id="menuHelpBtn"><span class="settings-icon">📖</span>使い方ガイド</button>
+      <button class="settings-item" id="menuBackupBtn"><span class="settings-icon">💾</span>バックアップ</button>
+      <button class="settings-item" id="menuRestoreBtn"><span class="settings-icon">📥</span>復元</button>
+      <hr class="settings-divider">
+      <button class="settings-item" id="menuAboutBtn"><span class="settings-icon">ℹ️</span>このアプリについて</button>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" id="settingsCloseBtn">閉じる</button>
+    </div>
+  `;
+  modalBackdrop.classList.remove("hidden");
+
+  if(showHint) setOnboarding({ settingsHintSeen:true });
+
+  document.getElementById("menuHelpBtn").onclick = () => openHelpModal();
+  document.getElementById("menuBackupBtn").onclick = () => doBackup();
+  document.getElementById("menuRestoreBtn").onclick = () => triggerRestore();
+  document.getElementById("menuAboutBtn").onclick = () => openAboutModal();
+  document.getElementById("settingsCloseBtn").onclick = closeModal;
+}
+
+function openAboutModal(){
+  modalSheet.innerHTML = `
+    <h2>ℹ️ このアプリについて</h2>
+    <div class="help-content">
+      <img class="about-panda" src="panda13.png" alt="">
+      <p>「お買い物リスト」は、日々の買い物ややることを気軽にメモできる、シンプルなリストアプリです。</p>
+      <p>データはご自身のスマホ・パソコンの中だけに保存され、外部に送信されることはありません。</p>
+      <p>大切なリストは「バックアップ」から保存しておくと安心です。</p>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" id="aboutCloseBtn">閉じる</button>
+    </div>
+  `;
+  document.getElementById("aboutCloseBtn").onclick = closeModal;
+}
+
+/* ====================== バックアップ・復元 ====================== */
+function doBackup(){
+  try{
+    const json = JSON.stringify(state.data, null, 2);
+    const blob = new Blob([json], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const d = new Date();
+    const dateStr = `${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`;
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `shopping-list-backup-${dateStr}.json`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  }catch(e){
+    alert("バックアップの保存に失敗しました。");
   }
-  const isEdit = !!editId;
-  const existing = isEdit ? state.usageHistory.find(x=>x.id===editId) : null;
-  const options = state.fabrics.map(f=>
-    `<option value="${f.id}" ${f.id===(existing?existing.fabricId:preselectFabricId)?'selected':''}>${escapeHtml(f.name)}</option>`
-  ).join("");
-  const today = new Date().toISOString().slice(0,10);
-
-  const html = `
-    <div class="sheet-title"><span>${isEdit?'使った記録を編集':'使った記録を追加'}</span><span id="close-sheet" style="cursor:pointer; color:var(--text-sub);">✕</span></div>
-    <label class="field-label">生地</label>
-    <select id="u-fabric">${options}</select>
-    <label class="field-label">作った物の名前</label>
-    <input type="text" id="u-item" value="${existing?escapeHtml(existing.itemName):''}" placeholder="例: キッズTシャツ 100cm">
-    <label class="field-label">使った量(メートル)</label>
-    <input type="number" id="u-length" step="0.1" min="0" value="${existing?existing.usedLength:''}" placeholder="例: 0.6">
-    <label class="field-label">日付</label>
-    <input type="date" id="u-date" value="${existing?existing.date:today}">
-    <label class="field-label">ひとことメモ<span style="color:var(--text-mute); font-weight:400;">(任意)</span></label>
-    <textarea id="u-memo" placeholder="例: Mサイズ×3枚、襟ぐりは伸び止めテープ使用">${existing&&existing.memo?escapeHtml(existing.memo):''}</textarea>
-    <button class="btn btn-primary" id="save-usage">${isEdit?'保存する':'記録する'}</button>
-  `;
-  const wrap = openSheet(html);
-  wrap.querySelector("#close-sheet").onclick = ()=> closeSheet(wrap);
-  wrap.querySelector("#save-usage").onclick = ()=>{
-    const fabricId = wrap.querySelector("#u-fabric").value;
-    const itemName = wrap.querySelector("#u-item").value.trim();
-    const usedLength = Math.max(0, parseFloat(wrap.querySelector("#u-length").value) || 0).toString();
-    const date = wrap.querySelector("#u-date").value;
-    const memo = wrap.querySelector("#u-memo").value.trim();
-    if(!itemName){ alert("作った物の名前を入力してください"); return; }
-    if(isEdit){
-      if(!confirm("この内容で上書き保存します。よろしいですか?")) return;
-      const oldFabricId = existing.fabricId;
-      const oldUsed = parseFloat(existing.usedLength) || 0;
-      const newUsed = parseFloat(usedLength) || 0;
-      if(oldFabricId !== fabricId){
-        adjustRemaining(oldFabricId, oldUsed);
-        adjustRemaining(fabricId, -newUsed);
-      } else {
-        adjustRemaining(fabricId, oldUsed - newUsed);
-      }
-      existing.fabricId = fabricId;
-      existing.itemName = itemName;
-      existing.usedLength = usedLength;
-      existing.date = date || today;
-      existing.memo = memo;
-    } else {
-      state.usageHistory.push({ id: uid(), fabricId, itemName, usedLength, date: date || today, memo });
-      adjustRemaining(fabricId, -(parseFloat(usedLength)||0));
-    }
-    saveData();
-    closeSheet(wrap);
-    showToast(isEdit ? "保存しました" : "記録しました");
-    render();
-  };
 }
 
-/* ---------- init ---------- */
+function triggerRestore(){
+  const input = document.createElement("input");
+  input.type = "file";
+  input.accept = "application/json,.json";
+  input.style.display = "none";
+  input.addEventListener("change", () => {
+    const file = input.files && input.files[0];
+    if(!file){ input.remove(); return; }
+    const reader = new FileReader();
+    reader.onload = () => {
+      let parsed;
+      try{
+        parsed = JSON.parse(reader.result);
+      }catch(e){
+        alert("このファイルは読み込めませんでした。正しいバックアップファイルか確認してください。");
+        input.remove();
+        return;
+      }
+      if(!parsed || !Array.isArray(parsed.lists)){
+        alert("このファイルはバックアップ形式ではないようです。");
+        input.remove();
+        return;
+      }
+      if(!confirm("復元すると現在のデータは上書きされます。よろしいですか?")){
+        input.remove();
+        return;
+      }
+      if(!parsed.history) parsed.history = [];
+      state.data = parsed;
+      saveData();
+      closeModal();
+      state.view = "home";
+      render();
+      input.remove();
+    };
+    reader.readAsText(file);
+  });
+  document.body.appendChild(input);
+  input.click();
+}
+
+function closeModal(){ modalBackdrop.classList.add("hidden"); }
+modalBackdrop.addEventListener("click", e => { if(e.target === modalBackdrop) closeModal(); });
+
+/* ====================== ユーティリティ ====================== */
+function escapeHtml(str){
+  return str.replace(/[&<>"']/g, m => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
+}
+function escapeAttr(str){ return escapeHtml(str); }
+
+/* ====================== 初期化 ====================== */
 render();
 
 if("serviceWorker" in navigator){
-  window.addEventListener("load", ()=>{
+  window.addEventListener("load", () => {
     navigator.serviceWorker.register("service-worker.js").catch(()=>{});
   });
 }
