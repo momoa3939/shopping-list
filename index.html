@@ -113,8 +113,8 @@
     gap:14px;
     background:var(--surface);
     border-radius:18px;
-    padding:16px 16px;
-    margin-bottom:12px;
+    padding:13px 16px;
+    margin-bottom:9px;
     border:var(--card-border);
     cursor:pointer;
     touch-action:pan-y;
@@ -978,7 +978,7 @@ function adjustHomeScrollPadding(){
   requestAnimationFrame(() => {
     const heroRect = homeHeroFixed.getBoundingClientRect();
     const areaRect = listScrollArea.getBoundingClientRect();
-    const gapAbovePanda = 20; // パンダちゃんの「ちょっと上」の余白
+    const gapAbovePanda = 10; // パンダちゃんの「ちょっと上」の余白(6個分の収まりを優先して少し詰めた)
     const availableHeight = heroRect.top - areaRect.top - gapAbovePanda;
     listScrollArea.style.height = Math.max(80, availableHeight) + "px";
   });
