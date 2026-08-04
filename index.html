@@ -113,8 +113,8 @@
     gap:14px;
     background:var(--surface);
     border-radius:18px;
-    padding:13px 16px;
-    margin-bottom:9px;
+    padding:16px 16px;
+    margin-bottom:12px;
     border:var(--card-border);
     cursor:pointer;
     touch-action:pan-y;
@@ -226,7 +226,7 @@
   .home-hero-fixed{
     position:fixed;
     left:50%;
-    bottom:124px;
+    bottom:98px;
     transform:translateX(-50%);
     width:100%;
     max-width:480px;
@@ -978,7 +978,7 @@ function adjustHomeScrollPadding(){
   requestAnimationFrame(() => {
     const heroRect = homeHeroFixed.getBoundingClientRect();
     const areaRect = listScrollArea.getBoundingClientRect();
-    const gapAbovePanda = 10; // パンダちゃんの「ちょっと上」の余白(6個分の収まりを優先して少し詰めた)
+    const gapAbovePanda = 4; // パンダちゃんの「ちょっと上」の余白(6個分の収まりを優先してさらに詰めた)
     const availableHeight = heroRect.top - areaRect.top - gapAbovePanda;
     listScrollArea.style.height = Math.max(80, availableHeight) + "px";
   });
@@ -1319,6 +1319,8 @@ function openSettingsModal(){
       <button class="settings-item" id="menuBackupBtn"><span class="settings-icon">💾</span>バックアップ</button>
       <button class="settings-item" id="menuRestoreBtn"><span class="settings-icon">📥</span>復元</button>
       <hr class="settings-divider">
+      <button class="settings-item" id="menuResetCacheBtn"><span class="settings-icon">🔄</span>表示データをリセットする</button>
+      <hr class="settings-divider">
       <button class="settings-item" id="menuAboutBtn"><span class="settings-icon">ℹ️</span>このアプリについて</button>
     </div>
     <div class="modal-actions">
@@ -1332,6 +1334,7 @@ function openSettingsModal(){
   document.getElementById("menuHelpBtn").onclick = () => openHelpModal();
   document.getElementById("menuBackupBtn").onclick = () => doBackup();
   document.getElementById("menuRestoreBtn").onclick = () => triggerRestore();
+  document.getElementById("menuResetCacheBtn").onclick = () => resetDisplayCache();
   document.getElementById("menuAboutBtn").onclick = () => openAboutModal();
   document.getElementById("settingsCloseBtn").onclick = closeModal;
 }
@@ -1350,6 +1353,26 @@ function openAboutModal(){
     </div>
   `;
   document.getElementById("aboutCloseBtn").onclick = closeModal;
+}
+
+/* ====================== 表示データのリセット(キャッシュ削除) ====================== */
+async function resetDisplayCache(){
+  if(!confirm("表示をリセットします。リストの中身は消えません。よろしいですか?")){
+    return;
+  }
+  try{
+    if("caches" in window){
+      const keys = await caches.keys();
+      await Promise.all(keys.map((key) => caches.delete(key)));
+    }
+    if("serviceWorker" in navigator){
+      const regs = await navigator.serviceWorker.getRegistrations();
+      await Promise.all(regs.map((reg) => reg.unregister()));
+    }
+  }catch(e){
+    // 失敗しても、とりあえず読み込み直しは試みる
+  }
+  location.reload();
 }
 
 /* ====================== バックアップ・復元 ====================== */
