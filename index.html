@@ -1029,7 +1029,7 @@ function renderDetail(){
 
   html += `
     <div class="add-row">
-      <input type="text" id="newItemInput" placeholder="追加するものを入力…" maxlength="40">
+      <input type="text" id="newItemInput" placeholder="追加するものを入力…" maxlength="40" autocomplete="off" autocapitalize="off" spellcheck="false">
       <button id="addItemBtn" style="background:${list.color}">${ICONS.plus}</button>
     </div>
   `;
@@ -1201,7 +1201,7 @@ function openListModal(listId){
 
   modalSheet.innerHTML = `
     <h2>${editing ? "リストを編集" : "新しいリスト"}</h2>
-    <input type="text" id="listNameInput" placeholder="リスト名(例：食料品)" maxlength="20" value="${editing?escapeAttr(list.name):''}">
+    <input type="text" id="listNameInput" placeholder="リスト名(例：食料品)" maxlength="20" autocomplete="off" autocapitalize="off" spellcheck="false" value="${editing?escapeAttr(list.name):''}">
     <div class="color-row" id="colorRow">
       ${PALETTE.map(c => {
         const isUsed = usedColors.includes(c);
