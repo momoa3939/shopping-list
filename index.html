@@ -226,7 +226,7 @@
   .home-hero-fixed{
     position:fixed;
     left:50%;
-    bottom:98px;
+    bottom:110px;
     transform:translateX(-50%);
     width:100%;
     max-width:480px;
@@ -489,6 +489,14 @@
   .help-content .help-note{
     font-size:13px;
     color:var(--muted);
+  }
+  .help-reset-btn-wrap{
+    margin:10px 0 4px;
+  }
+  .help-reset-btn-wrap .btn{
+    width:100%;
+    padding:11px;
+    font-size:13.5px;
   }
   .color-row{
     display:flex; gap:10px; margin-bottom:22px; flex-wrap:wrap;
@@ -1259,6 +1267,13 @@ function openHelpModal(){
       <p>⑤ リストごとに色を付けられます。<br>同じ色は選べないので、一目で見分けられます。</p>
       <p>データはご自身のスマホの中だけに保存されます。他の人と共有されることはないので、それぞれのスマホで自由に使ってね。</p>
 
+      <h3>🔄 表示がおかしいときは</h3>
+      <p>「アップロードしたのに更新されない」「表示が崩れている」など様子がおかしいときは、下のボタンを押してみてください。<br>
+      画面の表示データだけをリセットして、開き直します。リストの中身が消えることはありません。</p>
+      <div class="help-reset-btn-wrap">
+        <button class="btn" id="helpResetCacheBtn">🔄 表示データをリセットする</button>
+      </div>
+
       <h3>💾 バックアップについて</h3>
       <p>このアプリのデータは、ご利用のスマホ（またはパソコン）の中だけに保存されます。<br>
       そのため、機種変更やブラウザのデータ削除などを行うと、リストが消えてしまう場合があります。</p>
@@ -1300,6 +1315,7 @@ function openHelpModal(){
   `;
   modalBackdrop.classList.remove("hidden");
   document.getElementById("helpCloseBtn").onclick = closeModal;
+  document.getElementById("helpResetCacheBtn").onclick = () => resetDisplayCache();
 }
 
 /* ====================== モーダル(設定メニュー) ====================== */
@@ -1319,8 +1335,6 @@ function openSettingsModal(){
       <button class="settings-item" id="menuBackupBtn"><span class="settings-icon">💾</span>バックアップ</button>
       <button class="settings-item" id="menuRestoreBtn"><span class="settings-icon">📥</span>復元</button>
       <hr class="settings-divider">
-      <button class="settings-item" id="menuResetCacheBtn"><span class="settings-icon">🔄</span>表示データをリセットする</button>
-      <hr class="settings-divider">
       <button class="settings-item" id="menuAboutBtn"><span class="settings-icon">ℹ️</span>このアプリについて</button>
     </div>
     <div class="modal-actions">
@@ -1334,7 +1348,6 @@ function openSettingsModal(){
   document.getElementById("menuHelpBtn").onclick = () => openHelpModal();
   document.getElementById("menuBackupBtn").onclick = () => doBackup();
   document.getElementById("menuRestoreBtn").onclick = () => triggerRestore();
-  document.getElementById("menuResetCacheBtn").onclick = () => resetDisplayCache();
   document.getElementById("menuAboutBtn").onclick = () => openAboutModal();
   document.getElementById("settingsCloseBtn").onclick = closeModal;
 }
