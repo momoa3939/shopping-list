@@ -1,4 +1,4 @@
-const CACHE_NAME = "shopping-list-v15";
+const CACHE_NAME = "shopping-list-v16";
 const CACHE_FIRST_ASSETS = [
   "./icon-192.png",
   "./icon-512.png",
@@ -47,8 +47,9 @@ self.addEventListener("fetch", (event) => {
     );
   } else {
     // HTML本体・画面はネットワーク優先(最新を優先し、オフライン時のみキャッシュへ)
+    // ブラウザ自身のHTTPキャッシュも素通りして、必ずサーバーの最新版を取りに行く
     event.respondWith(
-      fetch(event.request)
+      fetch(event.request, { cache: "no-store" })
         .then((res) => {
           const resClone = res.clone();
           caches.open(CACHE_NAME).then((cache) => cache.put(event.request, resClone));
