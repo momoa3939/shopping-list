@@ -1326,7 +1326,8 @@ function openHelpModal(){
       <h3>💾 バックアップについて</h3>
       <p>このアプリのデータは、ご利用のスマホ（またはパソコン）の中だけに保存されます。<br>
       そのため、機種変更やブラウザのデータ削除などを行うと、リストが消えてしまう場合があります。</p>
-      <p>大切なリストがある時は、「設定」→「バックアップ」からデータ（JSONファイル）を保存しておいてください。<br>
+      <p>大切なリストがある時は、「設定」→「バックアップ」からデータを保存しておいてください。<br>
+      スマホでは共有メニューが開くので、「ドライブ」などを選ぶと保存先を選べます。<br>
       保存したファイルは、<br>
       ・iCloud<br>
       ・Googleドライブ<br>
@@ -1476,16 +1477,40 @@ async function resetDisplayCache(){
 }
 
 /* ====================== バックアップ・復元 ====================== */
+// スマホでは共有メニューを開いて「ドライブ」などに保存先を選べるようにする
+// (共有機能は .json を受け付けないため、共有するときだけ .txt 形式にする。中身は同じ)
+// 共有に対応していない環境では、今まで通りダウンロード保存
 function doBackup(){
+  let json;
   try{
-    const json = JSON.stringify(state.data, null, 2);
+    json = JSON.stringify(state.data, null, 2);
+  }catch(e){
+    alert("バックアップの保存に失敗しました。");
+    return;
+  }
+  const baseName = `shopping-list-backup-${todayStr()}`;
+
+  try{
+    const file = new File([json], `${baseName}.txt`, { type: "text/plain" });
+    if(navigator.canShare && navigator.canShare({ files: [file] })){
+      navigator.share({ files: [file], title: baseName }).catch(err => {
+        // 共有メニューを閉じた(キャンセル)ときは何もしない。それ以外はダウンロード保存へ
+        if(!(err && err.name === "AbortError")) downloadBackup(json, baseName);
+      });
+      return;
+    }
+  }catch(e){}
+
+  downloadBackup(json, baseName);
+}
+
+function downloadBackup(json, baseName){
+  try{
     const blob = new Blob([json], { type: "application/json" });
     const url = URL.createObjectURL(blob);
-    const d = new Date();
-    const dateStr = `${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`;
     const a = document.createElement("a");
     a.href = url;
-    a.download = `shopping-list-backup-${dateStr}.json`;
+    a.download = `${baseName}.json`;
     document.body.appendChild(a);
     a.click();
     a.remove();
@@ -1498,7 +1523,7 @@ function doBackup(){
 function triggerRestore(){
   const input = document.createElement("input");
   input.type = "file";
-  input.accept = "application/json,.json";
+  input.accept = "application/json,.json,text/plain,.txt";
   input.style.display = "none";
   input.addEventListener("change", () => {
     const file = input.files && input.files[0];
